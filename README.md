@@ -286,3 +286,5 @@ LLM_TIMEOUT=90
 - `gateway_last_error` 为 `None`。
 - Streamlit 健康检查返回 `ok`。
 - 旧历史项目仍可打开；新逻辑需要通过“新建测试”生成新的结果。
+
+# v2修改说明
