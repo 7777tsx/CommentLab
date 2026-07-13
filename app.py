@@ -273,7 +273,7 @@ if st.session_state.stage == 1:
         search_background = st.checkbox(
             "联网搜索帖子可能指代的公开事件背景",
             value=True,
-            help="使用模型服务的联网搜索工具；搜索结果会在分析结果中单独展示。",
+            help="使用联网搜索工具；搜索结果会在分析结果中单独展示。",
         )
         event_hint = st.text_input(
             "事件线索（可选）",
