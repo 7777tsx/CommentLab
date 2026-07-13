@@ -25,12 +25,14 @@ class CommentChain:
         round_no: int,
         version: str,
         analysis: ContentAnalysis | None = None,
+        background_context: dict | None = None,
     ) -> CommentBatch:
         payload = {
             "post_text": post_text,
             "publisher_profile": profile.model_dump(),
             "round_no": round_no,
             "version": version,
+            "shared_background": background_context or {},
             "personas": [
                 {
                     "persona_id": persona.persona_id,
@@ -80,6 +82,8 @@ class CommentChain:
                 "每个动作先从post_semantics选择真正关注的内容，evidence_span填帖子或父评论中的实际短语，"
                 "reaction_type填支持、个人联想、第一印象、质疑、调侃等反应类型。"
                 "如果推断属于unsupported_inferences，只有高怀疑或争议Persona可能如此误读，不得当成事实。"
+                "shared_background是所有Persona都已知晓的统一事件背景：评论时直接结合它，不要再假设自己不了解前因后果，"
+                "也不要重新做事实核查；status为uncertain或列在uncertainties中的内容只能作为不确定信息，不能写成既定事实。"
             ),
             fallback=lambda: self._demo_batch(
                 post_text, personas, visible_comments, round_no, version, analysis

@@ -15,6 +15,7 @@ from models.schemas import (
     ProjectResult,
     PublisherProfile,
     SimulationConfig,
+    WebResearchResult,
 )
 from services.database import Database
 from services.llm_client import ModelGateway
@@ -71,6 +72,7 @@ class CommentLabOrchestrator:
         seed: int = 42,
     ) -> ProjectResult:
         final_audience = (audience or prepared.audience).normalized()
+        background_context = self._comment_background(prepared.background_research)
         before_config = SimulationConfig(
             post_text=prepared.post_text,
             version="before",
@@ -80,7 +82,11 @@ class CommentLabOrchestrator:
             activation_counts=[7, 4, 3],
         )
         simulation_before = self.simulation_engine.run(
-            before_config, prepared.publisher_profile, final_audience, prepared.analysis
+            before_config,
+            prepared.publisher_profile,
+            final_audience,
+            prepared.analysis,
+            background_context=background_context,
         )
         risk_before = self.risk_chain.run(
             prepared.post_text, prepared.analysis, simulation_before
@@ -95,7 +101,11 @@ class CommentLabOrchestrator:
             update={"post_text": rewrite.rewritten_post, "version": "after"}
         )
         simulation_after = self.simulation_engine.run(
-            after_config, prepared.publisher_profile, final_audience, analysis_after
+            after_config,
+            prepared.publisher_profile,
+            final_audience,
+            analysis_after,
+            background_context=background_context,
         )
         risk_after = self.risk_chain.run(
             rewrite.rewritten_post, analysis_after, simulation_after
@@ -120,3 +130,23 @@ class CommentLabOrchestrator:
         )
         self.database.save_project(result)
         return result
+
+    @staticmethod
+    def _comment_background(
+        research: WebResearchResult | None,
+    ) -> dict | None:
+        """Build one concise fact card shared by every comment persona."""
+        if research is None or not research.succeeded:
+            return None
+        context = {
+            "event_name": research.event_name,
+            "conclusion": research.conclusion or research.summary,
+            "claims": [
+                {"text": claim.text, "status": claim.status}
+                for claim in research.claims[:3]
+            ],
+            "uncertainties": research.uncertainties[:1],
+        }
+        if not context["conclusion"] and not context["claims"]:
+            return None
+        return context

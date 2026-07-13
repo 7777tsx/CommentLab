@@ -65,11 +65,13 @@ cp .env.example .env
 ```env
 LLM_API_KEY=
 LLM_BASE_URL=
-LLM_MODEL=
+LLM_MODEL=deepseek-v4-flash
 LLM_TEMPERATURE=0.4
-LLM_TIMEOUT=30
-DEMO_MODE=true
+LLM_TIMEOUT=90
+DEMO_MODE=false
 DATABASE_PATH=commentlab.db
+WEB_SEARCH_ENABLED=true
+WEB_SEARCH_MODEL=qwen3.6-flash
 ```
 
 任何一项必要模型配置为空时，系统都会进入 `DEMO_MODE`，不会因为缺少密钥而崩溃。真实密钥不得提交到 Git 或出现在截图中。

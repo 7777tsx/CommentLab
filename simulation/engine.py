@@ -27,6 +27,8 @@ class SimulationEngine:
         profile: PublisherProfile,
         audience: AudiencePlan,
         analysis: ContentAnalysis | None = None,
+        *,
+        background_context: dict | None = None,
     ) -> SimulationResult:
         audience = audience.normalized()
         comments: list[Comment] = []
@@ -48,6 +50,7 @@ class SimulationEngine:
                 round_no=round_no,
                 version=config.version,
                 analysis=analysis,
+                background_context=background_context,
             )
             created = self._apply_actions(
                 batch.actions,

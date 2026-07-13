@@ -167,20 +167,36 @@ def render_risk(report) -> None:
 def render_background_research(research) -> None:
     if research is None:
         return
-    st.subheader("联网搜索结果")
+    st.subheader("联网核对结论")
     if research.status == "completed":
-        st.info(research.summary)
+        if research.event_name:
+            st.caption(f"可能指代：{research.event_name}")
+        conclusion = research.conclusion or research.summary
+        st.info(conclusion)
+        for claim in research.claims[:3]:
+            links = []
+            for source_index in claim.source_indexes:
+                if 0 <= source_index < len(research.sources):
+                    source = research.sources[source_index]
+                    links.append(f"[来源{source_index + 1}]({source.url})")
+            reference_text = " ".join(links)
+            st.markdown(f"- {claim.text} {reference_text}".rstrip())
+        if research.uncertainties:
+            st.caption("仍需注意：" + "；".join(research.uncertainties[:1]))
         if research.sources:
-            st.markdown("**参考来源**")
-            for source in research.sources[:5]:
-                st.markdown(f"- [{source.title}]({source.url})")
+            with st.expander(f"查看参考来源（{len(research.sources)}）"):
+                for index, source in enumerate(research.sources[:5], 1):
+                    st.markdown(f"{index}. [{source.title}]({source.url})")
         else:
-            st.caption("模型完成了联网研究，但当前接口没有返回可展示的来源链接。")
+            st.caption("当前接口没有返回可展示的来源链接。")
     elif research.status == "failed":
         st.warning(research.summary)
     else:
         st.caption(research.summary)
-    st.caption("搜索结果是独立背景参考，不参与当前版本的风险分数计算。")
+    if research.status == "completed":
+        st.caption("该精简背景会统一提供给所有评论 Agent，并通过模拟评论间接影响风险判断。")
+    else:
+        st.caption("未获得可靠联网背景，本次评论模拟不会注入未经核实的信息。")
 
 
 def render_comparison(result: ProjectResult) -> None:
@@ -270,11 +286,7 @@ if st.session_state.stage == 1:
             help="仅支持500字以内中文短文本；暂不支持读取链接、图片、视频或历史内容。",
         )
         st.caption(f"当前 {len(post_text)} / 500 字")
-        search_background = st.checkbox(
-            "联网搜索帖子可能指代的公开事件背景",
-            value=True,
-            help="使用联网搜索工具；搜索结果会在分析结果中单独展示。",
-        )
+        st.caption("系统会自动联网核对帖子指代的公开事件，并让所有评论 Agent 共享精简背景。")
         event_hint = st.text_input(
             "事件线索（可选）",
             placeholder="例如：事件名称、人物、机构或大致时间",
@@ -305,7 +317,7 @@ if st.session_state.stage == 1:
                 st.session_state.prepared = orchestrator.prepare(
                     post_text,
                     profile,
-                    search_background=search_background,
+                    search_background=True,
                     event_hint=event_hint,
                 )
             st.session_state.stage = 2
@@ -367,7 +379,7 @@ elif st.session_state.stage == 2:
             rationale=prepared.audience.rationale,
         ).normalized()
         try:
-            with st.spinner("受众 Agent 正在进行原文与改写后三轮反事实模拟..."):
+            with st.spinner("全部背景知情的受众 Agent 正在进行原文与改写后三轮模拟..."):
                 st.session_state.result = orchestrator.complete(prepared, audience=audience, seed=42)
             st.session_state.stage = 3
             st.rerun()
@@ -392,7 +404,7 @@ elif st.session_state.stage == 3:
         st.subheader("内容分析")
         render_risk(result.risk_before)
     with comments_col:
-        st.subheader("模拟评论区")
+        st.subheader("背景知情模拟评论区")
         render_comments(result.simulation_before.comments)
     st.divider()
     if st.button("查看改写与反事实对比", type="primary"):
@@ -444,10 +456,10 @@ else:
 
     before_comments, after_comments = st.columns([45, 55], gap="large")
     with before_comments:
-        st.markdown("#### 原文模拟评论区")
+        st.markdown("#### 原文背景知情评论区")
         render_comments(result.simulation_before.comments)
     with after_comments:
-        st.markdown("#### 改写后模拟评论区")
+        st.markdown("#### 改写后背景知情评论区")
         render_comments(result.simulation_after.comments)
     st.divider()
     st.subheader("仍需注意")

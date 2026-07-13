@@ -252,11 +252,24 @@ class ComparisonReport(StrictModel):
 class WebSource(StrictModel):
     title: str
     url: str
+    domain: str = ""
+    published_at: str | None = None
+    excerpt: str = ""
+
+
+class BackgroundClaim(StrictModel):
+    text: str = Field(min_length=1, max_length=100)
+    status: Literal["confirmed", "party_statement", "disputed", "uncertain"]
+    source_indexes: list[int] = Field(default_factory=list)
 
 
 class WebResearchResult(StrictModel):
     status: Literal["completed", "skipped", "unavailable", "failed"]
     event_hint: str = ""
+    event_name: str = ""
+    conclusion: str = ""
+    claims: list[BackgroundClaim] = Field(default_factory=list)
+    uncertainties: list[str] = Field(default_factory=list)
     summary: str = ""
     sources: list[WebSource] = Field(default_factory=list)
     error_message: str | None = None
