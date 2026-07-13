@@ -1,0 +1,15 @@
+[
+  {"persona_id":"core_fan","label":"核心老粉","group_name":"粉丝群体","description":"熟悉发布者，容忍度较高，但会注意人设变化。","weight":1.0,"reading_depth":0.95,"trust":0.90,"emotion_sensitivity":0.35,"controversy_tendency":0.15,"influence":0.65,"active":true},
+  {"persona_id":"regular_follower","label":"普通关注者","group_name":"粉丝群体","description":"阅读较完整，首先关心内容对自己的影响。","weight":1.0,"reading_depth":0.80,"trust":0.65,"emotion_sensitivity":0.45,"controversy_tendency":0.25,"influence":0.50,"active":true},
+  {"persona_id":"passerby","label":"普通路人","group_name":"路人群体","description":"不了解发布者，只依据当前帖子形成判断。","weight":1.0,"reading_depth":0.60,"trust":0.40,"emotion_sensitivity":0.45,"controversy_tendency":0.35,"influence":0.40,"active":true},
+  {"persona_id":"headline_reader","label":"只看标题型","group_name":"路人群体","description":"阅读深度低，容易忽略限定条件并形成简化理解。","weight":1.0,"reading_depth":0.20,"trust":0.35,"emotion_sensitivity":0.60,"controversy_tendency":0.55,"influence":0.55,"active":true},
+  {"persona_id":"rational_questioner","label":"理性追问者","group_name":"理性群体","description":"关注时间、范围、原因和可执行的具体信息。","weight":1.0,"reading_depth":0.95,"trust":0.50,"emotion_sensitivity":0.20,"controversy_tendency":0.20,"influence":0.55,"active":true},
+  {"persona_id":"expert_corrector","label":"专业纠错者","group_name":"理性群体","description":"关注逻辑、术语、前提和表达准确性。","weight":1.0,"reading_depth":1.00,"trust":0.45,"emotion_sensitivity":0.20,"controversy_tendency":0.35,"influence":0.70,"active":true},
+  {"persona_id":"motive_skeptic","label":"动机怀疑者","group_name":"怀疑群体","description":"容易将信息缺口理解成刻意隐瞒或其他动机。","weight":1.0,"reading_depth":0.65,"trust":0.15,"emotion_sensitivity":0.65,"controversy_tendency":0.80,"influence":0.65,"active":true},
+  {"persona_id":"commercial_skeptic","label":"商业化敏感者","group_name":"怀疑群体","description":"对广告、付费、合作和流量变化尤其敏感。","weight":1.0,"reading_depth":0.60,"trust":0.20,"emotion_sensitivity":0.60,"controversy_tendency":0.75,"influence":0.60,"active":true},
+  {"persona_id":"emotional_resonator","label":"情绪共鸣者","group_name":"情绪群体","description":"容易受到语气、关系感受和高热评论影响。","weight":1.0,"reading_depth":0.55,"trust":0.45,"emotion_sensitivity":0.90,"controversy_tendency":0.55,"influence":0.55,"active":true},
+  {"persona_id":"meme_user","label":"玩梗调侃者","group_name":"互动群体","description":"倾向把醒目表达压缩成梗，可能带偏讨论主题。","weight":1.0,"reading_depth":0.35,"trust":0.35,"emotion_sensitivity":0.55,"controversy_tendency":0.70,"influence":0.80,"active":true},
+  {"persona_id":"controversy_amplifier","label":"争议放大者","group_name":"互动群体","description":"将疑问改写成更绝对、更容易传播的说法。","weight":1.0,"reading_depth":0.40,"trust":0.10,"emotion_sensitivity":0.75,"controversy_tendency":0.95,"influence":0.90,"active":true},
+  {"persona_id":"silent_liker","label":"潜水点赞者","group_name":"沉默群体","description":"通常不发言，通过点赞影响热度和评论可见性。","weight":1.0,"reading_depth":0.55,"trust":0.45,"emotion_sensitivity":0.50,"controversy_tendency":0.35,"influence":0.35,"active":false}
+]
+

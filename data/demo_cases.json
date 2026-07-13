@@ -1,0 +1,30 @@
+[
+  {
+    "name": "模糊动态说明",
+    "post_text": "最近会适当减少更新，大家不用多想。",
+    "identity": "生活类内容创作者",
+    "domain": "日常分享",
+    "follower_scale": "中小体量",
+    "style": "直接、亲切、偶尔幽默",
+    "audience_relationship": "长期关注者较多，互动较稳定"
+  },
+  {
+    "name": "带群体指向的观点",
+    "post_text": "有些人真的应该学会尊重别人，不要什么事情都来指手画脚。",
+    "identity": "观点类内容创作者",
+    "domain": "社会观察",
+    "follower_scale": "中等体量",
+    "style": "直接、鲜明",
+    "audience_relationship": "既有支持者，也有不同意见的路人"
+  },
+  {
+    "name": "容易被视为辩解的回应",
+    "post_text": "我承认这件事处理得不够好，但当时的情况真的很复杂，希望大家不要只看结果。",
+    "identity": "知识类内容创作者",
+    "domain": "知识分享",
+    "follower_scale": "中等体量",
+    "style": "理性、坦诚",
+    "audience_relationship": "受众重视准确性和责任感"
+  }
+]
+
