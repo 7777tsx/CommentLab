@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import re
+
 from models.schemas import (
     ContentAnalysis,
+    MisunderstandingChain,
     RiskReport,
     RiskScores,
     RiskySpan,
@@ -51,10 +54,15 @@ class RiskChain:
                 "必须把风险归因到原文片段并提供误解链和修改方向，不判断事实或立场对错。"
                 "shared_background是所有相关Agent共同知晓的联网核对背景；用它区分已知背景与无依据猜测，"
                 "但不因事件事实本身给观点定性，且不得把不确定信息当成既定事实。"
+                "misunderstanding_chains中的每一项必须包含source_span和steps："
+                "source_span必须逐字复制post_text中的一段连续原文；"
+                "steps填写从该片段出发的2至4个推导节点，不得重复source_span；"
+                "每个step必须是语义完整的推导，不得输出‘读者将’‘进而接受’等连接词残片。"
                 "内部评分为1到5。最终分严格按文本25%、模拟75%计算。"
             ),
             fallback=lambda: self._demo_report(post_text, analysis, simulation),
         )
+        candidate = self._ensure_anchored_chains(post_text, candidate)
         # Scoring is a deterministic product rule, never delegated to model arithmetic.
         simulation_score = candidate.risk_scores.weighted_score()
         final_score = final_risk_score(analysis.text_analysis_score, simulation_score)
@@ -66,6 +74,84 @@ class RiskChain:
                 "final_score": final_score,
             }
         )
+
+    @staticmethod
+    def _merge_fragmented_steps(steps: list[str]) -> list[str]:
+        """Merge connector-only model fragments into complete inference nodes."""
+        connector_end = re.compile(
+            r"(?:将|把|被|为|成为|改为|视为|认为|接受|导致|引发|使|让|令|由于|因为|意味着)$"
+        )
+        transition_start = re.compile(r"^(?:进而|从而|最终|随后|继而|因此|于是)")
+        continuation_start = re.compile(r"^[，。、；：的地得而与及并或]")
+        merged = []
+        pending = ""
+        for raw in steps:
+            step = re.sub(r"\s+", " ", str(raw)).strip()
+            if not step:
+                continue
+            if pending:
+                if transition_start.match(step) and len(pending) >= 10:
+                    merged.append(pending)
+                    pending = step if connector_end.search(step) else ""
+                    if not pending:
+                        merged.append(step)
+                else:
+                    pending += step
+                    if re.search(r"[。！？；]$", pending):
+                        merged.append(pending)
+                        pending = ""
+                continue
+            if connector_end.search(step):
+                pending = step
+            elif continuation_start.match(step) and merged:
+                merged[-1] += step
+            else:
+                merged.append(step)
+        if pending:
+            merged.append(pending)
+        return merged
+
+    @staticmethod
+    def _ensure_anchored_chains(post_text: str, report: RiskReport) -> RiskReport:
+        """Ensure every retained chain is anchored to a literal span of this post."""
+        literal_risky_spans = [
+            span.text.strip()
+            for span in report.risky_spans
+            if span.text.strip() and span.text.strip() in post_text
+        ]
+        anchored = []
+        for chain in report.misunderstanding_chains:
+            steps = RiskChain._merge_fragmented_steps(chain.steps)[:6]
+            if not steps:
+                continue
+            source_span = chain.source_span.strip().strip("“”\"'")
+            if source_span not in post_text:
+                chain_key = re.sub(r"\s+", "", " ".join([source_span, *steps]))
+                source_span = next(
+                    (
+                        span
+                        for span in literal_risky_spans
+                        if re.sub(r"\s+", "", span) in chain_key
+                    ),
+                    "",
+                )
+            if not source_span or source_span not in post_text:
+                continue
+            anchored.append(MisunderstandingChain(source_span=source_span, steps=steps))
+
+        if not anchored:
+            source_span = literal_risky_spans[0] if literal_risky_spans else post_text[:30]
+            anchored = [
+                MisunderstandingChain(
+                    source_span=source_span,
+                    steps=[
+                        "该片段存在解释空间",
+                        "不同受众自行补全含义",
+                        "高热互动可能放大偏离原意的解读",
+                    ],
+                )
+            ]
+        return report.model_copy(update={"misunderstanding_chains": anchored})
 
     @staticmethod
     def _demo_report(
@@ -93,9 +179,29 @@ class RiskChain:
         chains = []
         for misreading in analysis.possible_misreadings[:3]:
             anchor = risky_spans[0].text
-            chains.append(f"“{anchor}”信息不足 → 受众补全含义 → 形成“{misreading}”解读 → 高热互动继续放大")
+            chains.append(
+                MisunderstandingChain(
+                    source_span=anchor,
+                    steps=[
+                        "信息不足",
+                        "受众补全含义",
+                        f"形成“{misreading}”解读",
+                        "高热互动继续放大",
+                    ],
+                )
+            )
         if not chains:
-            chains = ["信息缺口 → 不同Persona自行补全 → 高热评论影响后续阅读 → 讨论中心偏移"]
+            chains = [
+                MisunderstandingChain(
+                    source_span=risky_spans[0].text,
+                    steps=[
+                        "信息缺口",
+                        "不同Persona自行补全",
+                        "高热评论影响后续阅读",
+                        "讨论中心偏移",
+                    ],
+                )
+            ]
         directions = [
             "明确表达涉及的对象、范围和时间边界",
             "将对人的概括改为对具体行为或事实的描述",

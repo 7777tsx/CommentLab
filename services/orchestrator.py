@@ -173,6 +173,75 @@ class CommentLabOrchestrator:
         self.database.save_project(result)
         return result
 
+    def recompare_with_rewrite(
+        self,
+        result: ProjectResult,
+        rewritten_post: str,
+        seed: int = 42,
+    ) -> ProjectResult:
+        """Recompute only the edited rewrite side while preserving original results."""
+        rewritten_post = SimulationConfig(post_text=rewritten_post).post_text
+        if rewritten_post == result.rewrite.rewritten_post:
+            return result
+
+        background_context = self._shared_background(result.background_research)
+        rewrite = result.rewrite.model_copy(
+            update={
+                "rewritten_post": rewritten_post,
+                "preserved_elements": [],
+                "repaired_risks": [],
+                "explanation": "用户已在系统建议稿基础上完成编辑，本页结果按确认后的文案重新计算。",
+            }
+        )
+        if rewritten_post == result.post_text:
+            analysis_after = result.analysis_before
+            simulation_after = result.simulation_before
+            risk_after = result.risk_before
+        else:
+            analysis_after = self.content_chain.run(
+                rewritten_post,
+                result.publisher_profile,
+                background_context=background_context,
+            )
+            after_config = result.simulation_before.config.model_copy(
+                update={
+                    "post_text": rewritten_post,
+                    "version": "after",
+                    "seed": seed,
+                }
+            )
+            simulation_after = self.simulation_engine.run(
+                after_config,
+                result.publisher_profile,
+                result.audience,
+                analysis_after,
+                background_context=background_context,
+            )
+            risk_after = self.risk_chain.run(
+                rewritten_post,
+                analysis_after,
+                simulation_after,
+                background_context=background_context,
+            )
+        comparison = self.comparison_chain.run(
+            result.simulation_before,
+            simulation_after,
+            result.risk_before,
+            risk_after,
+            background_context=background_context,
+        )
+        updated = result.model_copy(
+            update={
+                "rewrite": rewrite,
+                "analysis_after": analysis_after,
+                "simulation_after": simulation_after,
+                "risk_after": risk_after,
+                "comparison": comparison,
+            }
+        )
+        self.database.save_project(updated)
+        return updated
+
     @staticmethod
     def _should_skip_rewrite(risk_before) -> bool:
         return risk_before.overall_level == "低" or risk_before.final_score < 2.0

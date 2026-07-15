@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime, timezone
 from typing import Any, Literal
 from uuid import uuid4
@@ -217,6 +218,11 @@ class RiskySpan(StrictModel):
     reason: str
 
 
+class MisunderstandingChain(StrictModel):
+    source_span: str = Field(default="", max_length=200)
+    steps: list[str] = Field(min_length=1, max_length=6)
+
+
 class RiskReport(StrictModel):
     overall_level: RiskLevel
     risk_scores: RiskScores
@@ -224,9 +230,41 @@ class RiskReport(StrictModel):
     simulation_score: float = Field(ge=1, le=5)
     final_score: float = Field(ge=1, le=5)
     risky_spans: list[RiskySpan]
-    misunderstanding_chains: list[str]
+    misunderstanding_chains: list[MisunderstandingChain]
     modification_directions: list[str]
     summary: str
+
+    @field_validator("misunderstanding_chains", mode="before")
+    @classmethod
+    def migrate_legacy_misunderstanding_chains(cls, value):
+        """Accept historical string chains while new results use anchored objects."""
+        if not isinstance(value, list):
+            return value
+        migrated = []
+        for item in value:
+            if not isinstance(item, str):
+                migrated.append(item)
+                continue
+            nodes = [
+                node.strip()
+                for node in re.split(r"\s*(?:→|⇒|➡|->|=>|—>)\s*", item)
+                if node.strip()
+            ]
+            if not nodes:
+                continue
+            source_span = ""
+            quoted = re.match(r'^[“\"](.+?)[”\"](.*)$', nodes[0])
+            if quoted:
+                source_span = quoted.group(1).strip()
+                remainder = quoted.group(2).strip()
+                nodes = ([remainder] if remainder else []) + nodes[1:]
+            migrated.append(
+                {
+                    "source_span": source_span,
+                    "steps": nodes or ["受众产生不同理解"],
+                }
+            )
+        return migrated
 
 
 class RewriteResult(StrictModel):
