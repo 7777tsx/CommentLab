@@ -4,6 +4,46 @@ from models.schemas import ContentAnalysis, PhraseIssue, PublisherProfile, RiskS
 from services.llm_client import ModelGateway
 
 
+INTERNAL_LABELS = {
+    "核心表达",
+    "限定条件",
+    "模糊词",
+    "缺失信息",
+    "内容类型",
+    "语气",
+    "潜在误解",
+    "人设冲突",
+    "合理分歧",
+    "shared_background",
+    "explicit_information",
+    "unsupported_inferences",
+}
+
+
+def _contains_internal_label(value: str) -> bool:
+    lowered = value.lower()
+    return any(label.lower() in lowered for label in INTERNAL_LABELS)
+
+
+def _clean_phrase_issues(issues: list[PhraseIssue], post_text: str) -> list[PhraseIssue]:
+    cleaned: list[PhraseIssue] = []
+    seen: set[str] = set()
+    for issue in issues:
+        phrase = issue.text.strip().strip("“”\"' ")
+        reason = issue.reason.strip()
+        if not phrase or phrase in seen:
+            continue
+        if phrase not in post_text:
+            continue
+        if len(phrase) > 30 or len(phrase) > max(12, len(post_text) // 2):
+            continue
+        if _contains_internal_label(phrase) or _contains_internal_label(reason):
+            continue
+        cleaned.append(PhraseIssue(text=phrase, reason=reason or "这句话的范围或依据还不够清楚"))
+        seen.add(phrase)
+    return cleaned[:5]
+
+
 AMBIGUOUS_RULES = {
     "适当": "调整程度和边界不明确",
     "有些人": "指代范围不明确，多个群体可能对号入座",
@@ -25,19 +65,56 @@ class ContentAnalysisChain:
     def __init__(self, gateway: ModelGateway):
         self.gateway = gateway
 
-    def run(self, post_text: str, profile: PublisherProfile) -> ContentAnalysis:
-        payload = {"post_text": post_text, "publisher_profile": profile.model_dump()}
-        return self.gateway.invoke_structured(
+    def run(
+        self,
+        post_text: str,
+        profile: PublisherProfile,
+        *,
+        background_context: dict | None = None,
+    ) -> ContentAnalysis:
+        payload = {
+            "post_text": post_text,
+            "publisher_profile": profile.model_dump(),
+            "shared_background": background_context or {},
+        }
+        candidate = self.gateway.invoke_structured(
             stage="content_analysis",
             schema=ContentAnalysis,
             payload=payload,
             system_prompt=(
                 "你是发布前沟通风险分析Agent。只分析沟通方式，不判断事实或观点对错。"
                 "提取核心表达、限定条件、模糊词、缺失信息、易被截取句、人设冲突和潜在误解。"
-                "同时识别内容类型、语气、文本明确信息、合理分歧和无依据推断。"
+                "ambiguous_phrases只能列出原帖中真实出现的短语，text必须是post_text的短子串，"
+                "reason必须是普通用户能理解的具体原因；不得把核心表达、内容类型、语气、"
+                "缺失信息、潜在误解、shared_background或其他字段名写入ambiguous_phrases。"
+                "同时识别内容类型、语气、文本明确信息、合理分歧和无依据推断，并放入各自字段。"
+                "shared_background是所有相关Agent和受众共同知晓的联网核对背景；结合它理解事件指代，"
+                "但不要把帖子未写出的背景计入explicit_information，也不要据此判断观点对错。"
+                "status为uncertain或列在uncertainties中的内容不能当成既定事实。"
                 "四类风险使用1到5整数，输出必须符合给定结构。"
             ),
             fallback=lambda: self._demo_analysis(post_text, profile),
+        )
+        return self._sanitize_analysis(candidate, post_text, profile)
+
+    @staticmethod
+    def _sanitize_analysis(
+        analysis: ContentAnalysis, post_text: str, profile: PublisherProfile
+    ) -> ContentAnalysis:
+        fallback = ContentAnalysisChain._demo_analysis(post_text, profile)
+        ambiguous = _clean_phrase_issues(analysis.ambiguous_phrases, post_text)
+        emotional = _clean_phrase_issues(analysis.emotional_phrases, post_text)
+        quotable = _clean_phrase_issues(analysis.quotable_phrases, post_text)
+        persona_conflicts = _clean_phrase_issues(analysis.persona_conflicts, post_text)
+        if analysis.ambiguous_phrases and not ambiguous:
+            ambiguous = fallback.ambiguous_phrases
+        return analysis.model_copy(
+            update={
+                "ambiguous_phrases": ambiguous,
+                "emotional_phrases": emotional,
+                "quotable_phrases": quotable,
+                "persona_conflicts": persona_conflicts,
+            }
         )
 
     @staticmethod

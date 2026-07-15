@@ -56,12 +56,19 @@ def test_structured_claims_bind_only_to_returned_sources() -> None:
     assert len(result.uncertainties) == 1
 
 
-def test_non_json_result_has_concise_compatible_fallback() -> None:
+def test_non_json_result_is_rejected_and_not_treated_as_background() -> None:
     result = WebResearchService._parse_research_payload("背景说明 " * 100, [])
-    assert result.status == "completed"
-    assert 1 <= len(result.conclusion) <= 100
-    assert result.summary == result.conclusion
-    assert result.uncertainties
+    assert result.status == "failed"
+    assert result.conclusion == ""
+    assert result.claims == []
+    assert result.error_message == "invalid_research_payload"
+    assert "未向后续 Agent 注入" in result.summary
+
+
+def test_non_object_json_result_is_rejected() -> None:
+    result = WebResearchService._parse_research_payload('["不是对象"]', [])
+    assert result.status == "failed"
+    assert result.error_message == "invalid_research_payload"
 
 
 def test_web_research_extracts_and_deduplicates_sources() -> None:

@@ -14,6 +14,8 @@ class ComparisonChain:
         after: SimulationResult,
         risk_before: RiskReport,
         risk_after: RiskReport,
+        *,
+        background_context: dict | None = None,
     ) -> ComparisonReport:
         consistent = self._persona_signature(before) == self._persona_signature(after)
         payload = {
@@ -22,6 +24,7 @@ class ComparisonChain:
             "risk_before": risk_before.model_dump(),
             "risk_after": risk_after.model_dump(),
             "persona_consistency": consistent,
+            "shared_background": background_context or {},
         }
         candidate = self.gateway.invoke_structured(
             stage="comparison",
@@ -29,7 +32,8 @@ class ComparisonChain:
             payload=payload,
             system_prompt=(
                 "你是反事实对比Agent。比较同一受众和随机配置下改写前后的误解、负面情绪、"
-                "对立回复和跑题变化。不要把模拟结果表述为真实舆情概率。"
+                "对立回复和跑题变化。shared_background在前后模拟中完全一致，比较时只归因于帖子文本变化。"
+                "不要把模拟结果表述为真实舆情概率，也不要把不确定背景当成事实。"
             ),
             fallback=lambda: self._demo_comparison(
                 before, after, risk_before, risk_after, consistent

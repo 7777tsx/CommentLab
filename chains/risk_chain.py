@@ -31,12 +31,15 @@ class RiskChain:
         post_text: str,
         analysis: ContentAnalysis,
         simulation: SimulationResult,
+        *,
+        background_context: dict | None = None,
     ) -> RiskReport:
         payload = {
             "post_text": post_text,
             "analysis": analysis.model_dump(),
             "simulation_metrics": simulation.metrics.model_dump(),
             "comments": [comment.model_dump() for comment in simulation.comments],
+            "shared_background": background_context or {},
             "scoring_rule": "文本25%，模拟75%；四类风险权重40/30/20/10",
         }
         candidate = self.gateway.invoke_structured(
@@ -46,6 +49,8 @@ class RiskChain:
             system_prompt=(
                 "你是沟通风险诊断Agent。结合原文分析和模拟评论识别误解、负面情绪、冲突、跑题。"
                 "必须把风险归因到原文片段并提供误解链和修改方向，不判断事实或立场对错。"
+                "shared_background是所有相关Agent共同知晓的联网核对背景；用它区分已知背景与无依据猜测，"
+                "但不因事件事实本身给观点定性，且不得把不确定信息当成既定事实。"
                 "内部评分为1到5。最终分严格按文本25%、模拟75%计算。"
             ),
             fallback=lambda: self._demo_report(post_text, analysis, simulation),
@@ -111,4 +116,3 @@ class RiskChain:
                 "部分受众会补全未说明的动机或范围，高热评论可能使这一解读成为主导叙事。"
             ),
         )
-

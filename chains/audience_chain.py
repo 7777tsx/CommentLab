@@ -23,6 +23,8 @@ class AudienceChain:
         post_text: str,
         profile: PublisherProfile,
         analysis: ContentAnalysis,
+        *,
+        background_context: dict | None = None,
     ) -> AudiencePlan:
         payload = {
             "post_text": post_text,
@@ -34,6 +36,7 @@ class AudienceChain:
                 "involved_groups": analysis.involved_groups,
                 "possible_misreadings": analysis.possible_misreadings[:3],
             },
+            "shared_background": background_context or {},
             "allowed_personas": [
                 {
                     "persona_id": item.persona_id,
@@ -51,6 +54,8 @@ class AudienceChain:
             system_prompt=(
                 "你是受众规划Agent。只能从给定的12种Persona模板中规划受众，不能发明真实用户。"
                 "保留persona_id及底层属性，结合发布者画像调整权重和大类比例。"
+                "shared_background是所有相关Agent共同知晓的联网核对背景；规划受众时结合其事件指代，"
+                "但不得发明背景中不存在的群体或把不确定信息当成事实。"
                 "潜水点赞者必须active=false。"
             ),
             fallback=self._default_plan,

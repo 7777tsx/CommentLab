@@ -50,12 +50,22 @@ class CommentLabOrchestrator:
         event_hint: str = "",
     ) -> PreparedProject:
         post_text = SimulationConfig(post_text=post_text).post_text
-        analysis = self.content_chain.run(post_text, profile)
-        audience = self.audience_chain.run(post_text, profile, analysis)
         background_research = (
             self.web_research.run(post_text, event_hint)
             if search_background
             else None
+        )
+        background_context = self._shared_background(background_research)
+        analysis = self.content_chain.run(
+            post_text,
+            profile,
+            background_context=background_context,
+        )
+        audience = self.audience_chain.run(
+            post_text,
+            profile,
+            analysis,
+            background_context=background_context,
         )
         return PreparedProject(
             post_text=post_text,
@@ -72,7 +82,7 @@ class CommentLabOrchestrator:
         seed: int = 42,
     ) -> ProjectResult:
         final_audience = (audience or prepared.audience).normalized()
-        background_context = self._comment_background(prepared.background_research)
+        background_context = self._shared_background(prepared.background_research)
         before_config = SimulationConfig(
             post_text=prepared.post_text,
             version="before",
@@ -89,29 +99,61 @@ class CommentLabOrchestrator:
             background_context=background_context,
         )
         risk_before = self.risk_chain.run(
-            prepared.post_text, prepared.analysis, simulation_before
-        )
-        rewrite = self.rewrite_chain.run(
-            prepared.post_text, prepared.publisher_profile, risk_before
-        )
-        analysis_after = self.content_chain.run(
-            rewrite.rewritten_post, prepared.publisher_profile
-        )
-        after_config = before_config.model_copy(
-            update={"post_text": rewrite.rewritten_post, "version": "after"}
-        )
-        simulation_after = self.simulation_engine.run(
-            after_config,
-            prepared.publisher_profile,
-            final_audience,
-            analysis_after,
+            prepared.post_text,
+            prepared.analysis,
+            simulation_before,
             background_context=background_context,
         )
-        risk_after = self.risk_chain.run(
-            rewrite.rewritten_post, analysis_after, simulation_after
-        )
+        if self._should_skip_rewrite(risk_before):
+            rewrite = self.rewrite_chain.keep_original(
+                prepared.post_text,
+                "原文已经是低风险，本轮不强制改写，避免引入新的误解空间。",
+            )
+            analysis_after = prepared.analysis
+            simulation_after = simulation_before
+            risk_after = risk_before
+        else:
+            rewrite = self.rewrite_chain.run(
+                prepared.post_text,
+                prepared.publisher_profile,
+                risk_before,
+                background_context=background_context,
+            )
+            analysis_after = self.content_chain.run(
+                rewrite.rewritten_post,
+                prepared.publisher_profile,
+                background_context=background_context,
+            )
+            after_config = before_config.model_copy(
+                update={"post_text": rewrite.rewritten_post, "version": "after"}
+            )
+            simulation_after = self.simulation_engine.run(
+                after_config,
+                prepared.publisher_profile,
+                final_audience,
+                analysis_after,
+                background_context=background_context,
+            )
+            risk_after = self.risk_chain.run(
+                rewrite.rewritten_post,
+                analysis_after,
+                simulation_after,
+                background_context=background_context,
+            )
+            if not self._rewrite_improved(risk_before, risk_after):
+                rewrite = self.rewrite_chain.keep_original(
+                    prepared.post_text,
+                    "候选改写未能降低风险，本轮保留原文，建议人工继续微调高风险片段。",
+                )
+                analysis_after = prepared.analysis
+                simulation_after = simulation_before
+                risk_after = risk_before
         comparison = self.comparison_chain.run(
-            simulation_before, simulation_after, risk_before, risk_after
+            simulation_before,
+            simulation_after,
+            risk_before,
+            risk_after,
+            background_context=background_context,
         )
         result = ProjectResult(
             project_id=prepared.project_id,
@@ -132,10 +174,18 @@ class CommentLabOrchestrator:
         return result
 
     @staticmethod
-    def _comment_background(
+    def _should_skip_rewrite(risk_before) -> bool:
+        return risk_before.overall_level == "低" or risk_before.final_score < 2.0
+
+    @staticmethod
+    def _rewrite_improved(risk_before, risk_after) -> bool:
+        return risk_after.final_score < risk_before.final_score
+
+    @staticmethod
+    def _shared_background(
         research: WebResearchResult | None,
     ) -> dict | None:
-        """Build one concise fact card shared by every comment persona."""
+        """Build one validated fact card shared by every downstream agent."""
         if research is None or not research.succeeded:
             return None
         context = {

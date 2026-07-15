@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import re
 from typing import Any
 from urllib.parse import urlparse
 
@@ -141,15 +140,19 @@ class WebResearchService:
         try:
             payload = json.loads(text)
         except (json.JSONDecodeError, TypeError):
-            compact = re.sub(r"\s+", " ", raw_text).strip()
-            conclusion = compact[:100] or "模型未返回可显示的事件核对结论。"
             return WebResearchResult(
-                status="completed",
+                status="failed",
                 event_hint=event_hint,
-                conclusion=conclusion,
-                summary=conclusion,
-                sources=sources[:8],
-                uncertainties=["返回内容未能结构化，建议结合来源人工核对。"],
+                summary="联网核对结果未通过结构化校验，未向后续 Agent 注入该内容。",
+                error_message="invalid_research_payload",
+            )
+
+        if not isinstance(payload, dict):
+            return WebResearchResult(
+                status="failed",
+                event_hint=event_hint,
+                summary="联网核对结果结构无效，未向后续 Agent 注入该内容。",
+                error_message="invalid_research_payload",
             )
 
         url_to_index = {
