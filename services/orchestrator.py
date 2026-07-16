@@ -6,6 +6,7 @@ from chains import (
     CommentChain,
     ComparisonChain,
     ContentAnalysisChain,
+    PreparationChain,
     RewriteChain,
     RiskChain,
 )
@@ -30,6 +31,9 @@ class CommentLabOrchestrator:
         self.gateway = ModelGateway(self.settings, self.database)
         self.content_chain = ContentAnalysisChain(self.gateway)
         self.audience_chain = AudienceChain(self.gateway)
+        self.preparation_chain = PreparationChain(
+            self.gateway, self.content_chain, self.audience_chain
+        )
         self.comment_chain = CommentChain(self.gateway)
         self.risk_chain = RiskChain(self.gateway)
         self.rewrite_chain = RewriteChain(self.gateway)
@@ -56,15 +60,9 @@ class CommentLabOrchestrator:
             else None
         )
         background_context = self._shared_background(background_research)
-        analysis = self.content_chain.run(
+        analysis, audience = self.preparation_chain.run(
             post_text,
             profile,
-            background_context=background_context,
-        )
-        audience = self.audience_chain.run(
-            post_text,
-            profile,
-            analysis,
             background_context=background_context,
         )
         return PreparedProject(
@@ -190,6 +188,7 @@ class CommentLabOrchestrator:
                 "rewritten_post": rewritten_post,
                 "preserved_elements": [],
                 "repaired_risks": [],
+                "repair_checks": [],
                 "explanation": "用户已在系统建议稿基础上完成编辑，本页结果按确认后的文案重新计算。",
             }
         )
@@ -244,7 +243,9 @@ class CommentLabOrchestrator:
 
     @staticmethod
     def _should_skip_rewrite(risk_before) -> bool:
-        return risk_before.overall_level == "低" or risk_before.final_score < 2.0
+        # The display band is intentionally sensitive; only truly minimal risk
+        # skips rewriting so borderline-low posts can still receive suggestions.
+        return risk_before.final_score < 2.0
 
     @staticmethod
     def _rewrite_improved(risk_before, risk_after) -> bool:

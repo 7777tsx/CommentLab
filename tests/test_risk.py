@@ -22,8 +22,7 @@ def test_final_score_uses_25_75_weighting() -> None:
 
 @pytest.mark.parametrize(
     ("score", "expected"),
-    [(1.999, "低"), (2.0, "中"), (3.499, "中"), (3.5, "高")],
+    [(2.499, "低"), (2.5, "中"), (3.099, "中"), (3.1, "高")],
 )
 def test_risk_thresholds(score: float, expected: str) -> None:
     assert risk_level(score) == expected
-

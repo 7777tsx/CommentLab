@@ -1,0 +1,710 @@
+{
+  "version": "1.0",
+  "description": "CommentLab 简化评测集。real_comments 仅供结果生成后的隐藏对照，不得注入业务流程。",
+  "cases": [
+    {
+      "id": "CL-EVAL-001",
+      "title": "《恋与深空》敖尹加入及官方回应",
+      "source_type": "real",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "《恋与深空》敖尹加入争议与官方回应",
+      "background": {
+        "status": "completed",
+        "event_name": "《恋与深空》敖尹加入与官方回应",
+        "conclusion": "官方确认敖尹加入属于长期内容规划，并就信息呈现未充分回应玩家期待致歉；公告承诺现有每位男主仍是长期规划的重要部分，但没有给出具体产能、剧情篇幅、资源分配或敖尹去留安排。",
+        "claims": [
+          {"text": "敖尹加入被官方表述为长期内容规划的一环", "status": "party_statement", "source_indexes": []},
+          {"text": "官方承认相关信息呈现引发疑虑并致歉", "status": "party_statement", "source_indexes": []},
+          {"text": "公告未提供各男主后续产能和资源分配的量化安排", "status": "confirmed", "source_indexes": []}
+        ],
+        "uncertainties": ["公告中的长期承诺将如何落实，无法仅凭该文本确认。"],
+        "summary": "固定背景仅概括公告明确内容及其未回答的信息，不预设玩家应否接受。",
+        "sources": []
+      },
+      "post_text": "自项目筹备之初，我们便希望《恋与深空》能够成为一个持续成长、不断丰富的恋爱世界，为猎人小姐们带来更多样、更长久的陪伴体验。这份愿景也始终贯穿于游戏的长期规划与内容制作中。\n敖尹的加入，也是《恋与深空》长期内容规划中的一环。但在相关信息的呈现上，我们未能充分兼顾大家对于后续制作安排的期待，也让大家自首曝以来产生了诸多疑虑与担忧。由此带来的不佳体验，在此向大家致以诚挚的歉意。\n\n我们也深刻明白，这份担忧并非只是对更新节奏的顾虑，更源于大家对《恋与深空》，以及一路陪伴至今的男主们投入的情感。正是大家珍视与男主们共同走过的每一段旅程，才会希望这份陪伴能够一直延续下去。\n因此，我们也在此郑重承诺：每一位男主的故事、陪伴和未来，都始终是《恋与深空》长期规划中至关重要的一部分，不会因为任何原因而改变。",
+      "profile": {"identity": "游戏官方账号", "domain": "乙女游戏运营", "follower_scale": "大型账号", "style": "正式、克制、重视玩家情感", "audience_relationship": "玩家长期投入情感并高度关注角色资源分配"},
+      "annotations": {
+        "risk_spans": ["长期内容规划中的一环", "未能充分兼顾", "不会因为任何原因而改变"],
+        "controversy_topics": [
+          {"label": "核心诉求未回应或拒绝接受", "keywords": ["不接受", "没回应", "避重就轻", "核心诉求"]},
+          {"label": "敖尹不会删除", "keywords": ["不删敖尹", "敖尹不会下线", "保留敖尹", "下线敖尹"]},
+          {"label": "原有男主产能与剧情资源", "keywords": ["五个男主", "原男主", "产能", "剧情", "资源"]},
+          {"label": "补偿或福利被视为引导登录", "keywords": ["福利", "补偿", "登录游戏", "安抚"]}
+        ],
+        "preserved_points": [
+          {"label": "承认信息呈现不足并道歉", "keywords": ["信息", "呈现", "歉意", "抱歉"]},
+          {"label": "承诺原有男主长期内容", "keywords": ["每一位男主", "男主", "长期规划", "故事"]}
+        ],
+        "real_comments": ["不接受", "翻译来了：不删敖尹[yeah]原本的五个男主剧情看着给 发点福利给你们让你们登游戏", "以后要提高产能阿空", "不接受不理解不尊重", "就这样回应了零件事", "下线敖尹"]
+      }
+    },
+    {
+      "id": "CL-EVAL-002",
+      "title": "阿根廷球员展示马尔维纳斯群岛横幅",
+      "source_type": "real",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "阿根廷对英格兰赛后展示 Las Malvinas son Argentinas 横幅",
+      "background": {
+        "status": "completed",
+        "event_name": "阿根廷球员赛后展示马尔维纳斯群岛横幅",
+        "conclusion": "赛后多名阿根廷球员展示写有“Las Malvinas son Argentinas”的横幅，该表述涉及阿根廷与英国长期存在主权争议的岛屿。体育赛事对政治标语设有限制，但具体行为如何定性和处罚应以赛事组织方结论为准。",
+        "claims": [
+          {"text": "多名阿根廷球员赛后共同展示涉马尔维纳斯群岛标语", "status": "confirmed", "source_indexes": [0]},
+          {"text": "国际足球规则对装备或展示中的政治标语设有限制", "status": "confirmed", "source_indexes": [0]},
+          {"text": "比赛中的身体对抗是否属于恶意犯规存在评价分歧", "status": "disputed", "source_indexes": []}
+        ],
+        "uncertainties": ["是否处罚及处罚尺度以赛事组织方后续正式决定为准。"],
+        "summary": "横幅事件可以核对；从横幅进一步推断整场所有犯规的主观恶意，需要比赛证据支持。",
+        "sources": [{"title": "Argentina players display Falklands banner after England match", "url": "https://apnews.com/article/240a5fcd72446efd674fd6d9eb52572a", "domain": "apnews.com", "excerpt": "赛后横幅事件报道"}]
+      },
+      "post_text": "阿根廷球员这个做法真的让球迷感到失望！赢了球、丢了人，破了红线、失了规矩。\n在阿根廷绝杀英格兰后，阿根廷球员洛塞尔索和奥塔门迪率先举起一面简易横幅，多名球员随后共同参与庆祝。\n白底黑字用西班牙语写着“Las Malvinas son Argentinas”，即“马尔维纳斯群岛属于阿根廷”。\n世界体育竞技一向都与这些政治较量划清界限的，国际足联也明确规定禁止球员展示带有政治、宗教或个人性质的标语或图像，任何违规行为都将面临赛事组织者或国际足联的处罚。\n赛前阿根廷副总统比利亚鲁埃尔就在社交媒体上称英格兰为“入侵者”和“海盗”，认为这场比赛的“意义远不止于此”。\n虽然主教练斯卡洛尼赛前表态说不会将足球与政治混为一谈。但球员们在赛场上的行为和赛后的行为并不是像他说的那样。\n所以也就能明白踢比赛时阿根廷那些球员从头到尾一堆往死了踢的恶意犯规动作、动不动就一群人冲上去要干仗的架势。",
+      "profile": {"identity": "体育评论账号", "domain": "国际足球", "follower_scale": "中等体量", "style": "立场鲜明、评论直接", "audience_relationship": "受众包含不同球队球迷，争议事件下对立明显"},
+      "annotations": {
+        "risk_spans": ["赢了球、丢了人", "世界体育竞技一向都与这些政治较量划清界限", "所以也就能明白", "往死了踢的恶意犯规动作"],
+        "controversy_topics": [
+          {"label": "体育能否与政治切割", "keywords": ["体育与政治", "政治无关", "政治", "俄罗斯", "伊朗"]},
+          {"label": "犯规是否恶意及南美踢法", "keywords": ["恶意犯规", "踢得脏", "南美", "体育精神"]},
+          {"label": "规则执行是否双重标准", "keywords": ["双标", "俄罗斯", "伊朗", "红牌", "国际足联"]},
+          {"label": "横幅行为是否违规", "keywords": ["横幅", "标语", "违规", "处罚"]}
+        ],
+        "preserved_points": [
+          {"label": "批评赛后政治横幅", "keywords": ["横幅", "马尔维纳斯", "政治"]},
+          {"label": "质疑比赛中的恶意动作", "keywords": ["犯规", "动作", "冲突"]}
+        ],
+        "real_comments": ["比赛期间就看得很生气。虽然喜欢梅西，但我真的不喜欢阿根廷。南美球队的脏文化太恶心人了。激烈有强度的比赛，你可以利用技术和身体对抗，但一直用往死了干的恶意犯规动作太违背体育竞技精神了！", "体育与政治无关，专注球场竞技", "俄罗斯还在家呢，你跟我谈政治？伊朗都入境困难你跟我谈政治", "俄罗斯还在家呢，你跟我谈政治？伊朗都入境困难你跟我谈政治", "你先让伊朗在美国过夜再谈无关政治，你先让美国前锋执行红牌停赛判罚再谈无关政治", "确实球迷们感到失望哦"]
+      }
+    },
+    {
+      "id": "CL-EVAL-003",
+      "title": "《满江红》票房超越《复联4》争议",
+      "source_type": "real",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "《满江红》票房超过《复仇者联盟4》及幽灵场争议",
+      "background": {
+        "status": "completed",
+        "event_name": "《满江红》票房排名及票房争议",
+        "conclusion": "公开票房数据曾显示《满江红》票房超过《复仇者联盟4》并进入中国影史票房前列；围绕排片、幽灵场和票房注水的网络质疑同时存在，但争议性指控不能仅因评论或转发被当作已证实事实。",
+        "claims": [
+          {"text": "《满江红》票房超过《复仇者联盟4》并进入中国影史票房前列", "status": "confirmed", "source_indexes": [0]},
+          {"text": "网络上存在对排片和幽灵场的质疑", "status": "confirmed", "source_indexes": [1]},
+          {"text": "票房注水属于争议性指控，固定背景不作事实确认", "status": "disputed", "source_indexes": [1]}
+        ],
+        "uncertainties": ["票房排名会随统计口径和后续影片变化；本案例只使用发帖时语境。"],
+        "summary": "区分可核对的票房数据、影片质量偏好与未经确认的票房操纵指控。",
+        "sources": [
+          {"title": "《满江红》进入中国影史票房榜前列", "url": "https://m.bjnews.com.cn/detail/1676276947168663.html", "domain": "bjnews.com.cn", "excerpt": "票房排名报道"},
+          {"title": "《满江红》回应幽灵场等争议", "url": "https://news.sina.cn/2023-01-26/detail-imycphun0847411.d.html", "domain": "sina.cn", "excerpt": "相关争议及回应"}
+        ]
+      },
+      "post_text": "《满江红》票房超越复联4了，成为中国影史票房总榜第七！看来不管网上如何各种浪起，终是无法代表广大劳动群众的选择，某些粉丝只能默默打下，我不懂这几个字哈哈！",
+      "profile": {"identity": "电影娱乐博主", "domain": "电影票房与影评", "follower_scale": "中等体量", "style": "口语化、带调侃", "audience_relationship": "不同影片粉丝混杂，票房话题容易形成阵营"},
+      "annotations": {
+        "risk_spans": ["无法代表广大劳动群众的选择", "某些粉丝只能默默打下", "我不懂这几个字哈哈"],
+        "controversy_topics": [
+          {"label": "票房是否注水或存在幽灵场", "keywords": ["注水", "幽灵场", "排片", "座位", "数据"]},
+          {"label": "票房高不等于影片更好", "keywords": ["好看", "质量", "票房不等于", "说明它比"]},
+          {"label": "影片阵营对立没有必要", "keywords": ["打来打去", "两部都", "各有优点", "粉丝"]}
+        ],
+        "preserved_points": [
+          {"label": "陈述票房排名变化", "keywords": ["票房", "第七", "复联4"]},
+          {"label": "表达市场选择与网络声音不同", "keywords": ["选择", "网上", "观众"]}
+        ],
+        "real_comments": ["希望能继续向前 排个第6吧 图个好彩头", "有啥不懂的，数据排片，影片座位不全是透明的吗？对赌协议歇斯底里注水，最大的笑话了", "说没有人的票房不觉得尴尬吗？我看到坐的满满的都是鬼？", "说明它比复联四好看？", "干嘛要这样打来打去[允悲]，我两部都看了，豆瓣都打了高分好评，满江红巧思和戏剧化我很喜欢，还有喜爱的演员参演，球2场面恢弘有中国浪费也很好嘛，唉", "注水票房 幽灵场打压别人呀"]
+      }
+    },
+    {
+      "id": "CL-EVAL-004",
+      "title": "张雅琪‘做错了0件事’及王俊凯类比",
+      "source_type": "real",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "张雅琪综艺表现争议与王俊凯类比",
+      "background": {
+        "status": "completed",
+        "event_name": "张雅琪综艺表现讨论",
+        "conclusion": "帖子是在为张雅琪的综艺表现辩护，并假设如果换成王俊凯就无人吐槽。公开讨论同时涉及节目中具体行为、节目剪辑、前期人设营销和明星粉丝规模；仅凭粉丝多少无法解释全部批评。",
+        "claims": [
+          {"text": "帖子使用王俊凯作为反事实类比", "status": "confirmed", "source_indexes": []},
+          {"text": "评论者会结合节目中的具体行为评价，而不只讨论粉丝数量", "status": "confirmed", "source_indexes": []},
+          {"text": "剪辑和营销对观感造成多大影响无法由帖子本身确认", "status": "uncertain", "source_indexes": []}
+        ],
+        "uncertainties": ["节目行为的完整上下文和剪辑影响需要观看完整节目才能判断。"],
+        "summary": "固定背景帮助 Agent 区分反网暴立场、具体行为评价和不成立的明星替换假设。",
+        "sources": []
+      },
+      "post_text": "张雅琪做错了0件事，她唯一错的就是粉丝太少了，如果她和王俊凯换过来，我保证没有一个人吐槽她，人家做事也是努力工作吧，多说几句只是对公司负责啊，有什么错吗？我真的挺无语的，没必要这么欺负人家一个小女生吧，这么欺负人真的没必要哈，人家多说句话，就是为了对工作负责，没必要这样吧",
+      "profile": {"identity": "娱乐讨论账号", "domain": "综艺与明星话题", "follower_scale": "中小体量", "style": "情绪化、维护艺人", "audience_relationship": "受众熟悉节目内容，也包含不同明星粉丝"},
+      "annotations": {
+        "risk_spans": ["做错了0件事", "唯一错的就是粉丝太少了", "如果她和王俊凯换过来", "没有一个人吐槽她", "欺负人家一个小女生"],
+        "controversy_topics": [
+          {"label": "与王俊凯类比不成立且无端牵连", "keywords": ["王俊凯不会", "为什么提王俊凯", "小凯没错", "类比"]},
+          {"label": "批评来自具体节目行为而非粉丝数量", "keywords": ["跟粉丝没关系", "具体行为", "看节目", "事实"]},
+          {"label": "其他高咖艺人同样曾被批评", "keywords": ["也挨骂", "赵丽颖", "秦海璐", "杨紫", "周冬雨"]},
+          {"label": "积极做事不等于做得好", "keywords": ["积极干", "干得不好", "找找原因", "高能量人设"]}
+        ],
+        "preserved_points": [
+          {"label": "反对针对个人的过度攻击", "keywords": ["欺负", "攻击", "吐槽"]},
+          {"label": "肯定其工作积极性", "keywords": ["努力工作", "积极", "负责"]}
+        ],
+        "real_comments": ["首先王俊凯不会干这种事情，还有就是这跟粉丝多少没关系", "为什么要提王俊凯,小凯没有做错事吧", "当年王俊凯上中餐厅也没少挨骂，赵丽颖当年都爆火之后了上了直接被网暴，连秦海璐杨紫，和第一季的周冬雨也没少挨骂，哪个不比她咖位大，而且之前是芒果恶剪，而张这边都是把好的剪在了正片里，都这样了还被骂多少要找找自己的原因了", "这么多人说，估计是因为前期老营销高精力高能量人设，再加上有些看了花少7的人，在看花少的时候，就对她的一些行为不满了，积攒起来，直到这些事发生，我一个路人，看了那综艺，确实感觉就是她啥事都积极干，但事事干得不是很好", "请问您看节目了吗？难道大家说的不是事实啊让她去放餐具教她倒酒这个难道不是事实"]
+      }
+    },
+    {
+      "id": "CL-EVAL-005",
+      "title": "国货品牌‘79元哪里贵了’言论",
+      "source_type": "real",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "李佳琦直播间国货79元哪里贵了与工资涨没涨言论",
+      "background": {
+        "status": "completed",
+        "event_name": "李佳琦直播间79元言论争议",
+        "conclusion": "直播中出现“哪里贵了”“工资涨没涨”“有没有认真工作”等表达并引发广泛争议。争议焦点不只是商品价格，也包括把消费者收入和购买压力归因于个人工作态度，以及主播与普通消费者关系的变化。",
+        "claims": [
+          {"text": "相关直播言论包含对工资和是否认真工作的反问", "status": "confirmed", "source_indexes": [0]},
+          {"text": "言论引发消费者对被冒犯和被指责的讨论", "status": "confirmed", "source_indexes": [0, 1]},
+          {"text": "商品是否贵仍取决于产品、收入与消费需求，不能由单句话客观决定", "status": "disputed", "source_indexes": []}
+        ],
+        "uncertainties": ["固定背景不评价品牌定价是否合理，只说明争议发生的语境。"],
+        "summary": "Agent应保留国货经营和长期价格信息，同时识别对普通消费者的责任归因。",
+        "sources": [
+          {"title": "李佳琦直播言论引争议", "url": "https://www.chinanews.com/cj/2023/09-11/10076151.shtml", "domain": "chinanews.com", "excerpt": "直播言论与舆论反应"},
+          {"title": "79元花西子相关争议", "url": "https://www.nbd.com.cn/articles/2023-09-11/3013620.html", "domain": "nbd.com.cn", "excerpt": "价格与消费者讨论"}
+        ]
+      },
+      "post_text": "国货品牌很难的，这么多年都是79块钱，哪里贵了？有时候找找自己原因，这么多年工资涨没涨，有没有认真工作？",
+      "profile": {"identity": "头部带货主播", "domain": "美妆与直播电商", "follower_scale": "超大型账号", "style": "直接、口语化、销售导向", "audience_relationship": "大量普通消费者因长期推荐形成信任"},
+      "annotations": {
+        "risk_spans": ["哪里贵了", "找找自己原因", "工资涨没涨", "有没有认真工作"],
+        "controversy_topics": [
+          {"label": "把收入问题归因于个人不努力", "keywords": ["认真工作", "挣钱", "工资", "自己原因"]},
+          {"label": "阶层变化后脱离普通消费者", "keywords": ["阶级", "忘记以前", "普通人", "打工人"]},
+          {"label": "消费者抵制品牌", "keywords": ["不买", "顾客", "消费者", "抵制"]},
+          {"label": "国货难不能为冒犯辩护", "keywords": ["国货品牌很难", "最后一句", "雷点", "踩中"]}
+        ],
+        "preserved_points": [
+          {"label": "说明产品长期维持79元", "keywords": ["79", "多年", "价格"]},
+          {"label": "表达国货品牌经营不易", "keywords": ["国货", "品牌", "不容易", "很难"]}
+        ],
+        "real_comments": ["打工人不配", "再也不买这个牌子了，反正你们品牌也不缺我这一个顾客", "阶级跃迁后都忘记自己以前的日子是怎么过来的", "他如果只说“国货品牌很难的”倒也还能说的过去，但他最后那一句话是实打实的踩中了很多人的雷点，没事儿不要惹打工人呐", "挣钱靠认真工作？自己心里没点数", "普通人把他捧起来了，他反过来嘲讽普通人"]
+      }
+    },
+    {
+      "id": "CL-EVAL-006",
+      "title": "《空洞骑士》二代游戏设计批评",
+      "source_type": "real",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "《空洞骑士：丝之歌》难度、念珠经济与成长曲线争议",
+      "background": {
+        "status": "completed",
+        "event_name": "《空洞骑士：丝之歌》难度与经济系统讨论",
+        "conclusion": "帖子提出成长曲线、Boss奖励反馈、念珠供需、陷阱和跳跳乐体验等具体批评，同时使用强烈贬损措辞。系列初代也经历过持续更新；官方补丁信息可作为版本变化背景，但不能直接否定玩家对当前版本的体验。",
+        "claims": [
+          {"text": "帖子包含成长、Boss反馈、念珠经济和陷阱设计等具体体验批评", "status": "confirmed", "source_indexes": []},
+          {"text": "系列作品会通过补丁持续调整体验", "status": "confirmed", "source_indexes": [0]},
+          {"text": "难度是否合理以及操作体验好坏属于玩家间有分歧的评价", "status": "disputed", "source_indexes": []}
+        ],
+        "uncertainties": ["不同平台、控制器、版本和玩家进度可能造成不同体验。"],
+        "summary": "Agent需要把可讨论的机制批评与‘像屎一样’等情绪措辞分开，不能用‘技术差’自动驳回体验。",
+        "sources": [{"title": "Silksong patch notes", "url": "https://www.teamcherry.com.au/blog/silksong-patch-1", "domain": "teamcherry.com.au", "excerpt": "官方版本调整说明"}]
+      },
+      "post_text": "我是真想不到空洞骑士一代设计的这么完美，你二代是怎么能做到像屎一样的？极不平衡的成长曲线，打完BOSS基本一点反馈都没有，念珠的供需完全不合理，很多小怪都不掉钱，但是哪里都要用到钱。学魂游不是光搞一堆莫名其妙的陷阱就可以的，为难而难，评价为屎。",
+      "profile": {"identity": "普通游戏玩家", "domain": "游戏体验分享", "follower_scale": "个人账号", "style": "直接、情绪强烈", "audience_relationship": "受众包含系列老玩家和难度玩法爱好者"},
+      "annotations": {
+        "risk_spans": ["像屎一样", "极不平衡", "为难而难", "评价为屎"],
+        "controversy_topics": [
+          {"label": "初代也经过长期更新完善", "keywords": ["一代", "补丁", "更新", "才这么完美"]},
+          {"label": "念珠不足是否来自玩家消费选择", "keywords": ["串珠", "念珠", "不存", "没钱"]},
+          {"label": "难度曲线还是技术与耐心问题", "keywords": ["技术问题", "耐心", "一点一点变难", "多打几次"]},
+          {"label": "跳跳乐体验与难度选项", "keywords": ["跳跳乐", "手柄", "低难度", "游戏体验"]}
+        ],
+        "preserved_points": [
+          {"label": "成长和Boss奖励反馈不足", "keywords": ["成长曲线", "BOSS", "反馈"]},
+          {"label": "念珠经济供需不合理", "keywords": ["念珠", "供需", "掉钱"]},
+          {"label": "反对单纯用陷阱堆高难度", "keywords": ["陷阱", "为难而难", "难度"]}
+        ],
+        "real_comments": ["一代也是打补丁不停更新才这么完美的", "喷你其他的感觉你还能反驳，我就问一个：“没提前准备好串珠”，翻译下，我拿到串珠从来不存，看到东西一定要买，没钱不是我的错。", "怎么就不平衡了，boss都是一点一点变难的 你一玩就让你打格洛你肯定打不过啊，那只能说明你技术问题，你就没有耐心吗，你就不能多打几次吗，我虽然也玩的没那么好但是我至少能坚持下去玩.你这就是个导火索评论。专门让人生气的", "我拿手柄跳跳乐，能不能跳上去基本看命，这个跳跳乐太恶心人了，至少应该给个开局选择的机会，选择低难度或者高难度的跳跳乐。你不能既挣人家的钱，又完全不为人家的游戏体验考虑"]
+      }
+    },
+    {
+      "id": "CL-EVAL-007",
+      "title": "阿根廷踢得脏与图赫尔执教问题",
+      "source_type": "real",
+      "expected_risk": "中",
+      "search_background": false,
+      "event_hint": "阿根廷对英格兰比赛犯规尺度及图赫尔执教争议",
+      "background": {
+        "status": "completed",
+        "event_name": "阿根廷对英格兰比赛犯规与执教讨论",
+        "conclusion": "发帖者明确承认没有看全场、只看了部分集锦，并准备看录像后再谈判罚。‘阿根廷踢得脏’是对犯规尺度的评价，‘图赫尔不行’是对教练表现的评价，两者逻辑上可以同时成立，并非互相排斥；红牌是否应出现以及是否改变赛果属于需要录像和裁判尺度支持的反事实判断。",
+        "claims": [
+          {"text": "发帖者的信息来源仅为部分集锦而非完整比赛", "status": "confirmed", "source_indexes": []},
+          {"text": "球队动作评价与教练表现评价可以同时成立", "status": "confirmed", "source_indexes": []},
+          {"text": "若罚下一两人比赛结果就会不同属于无法直接验证的反事实", "status": "uncertain", "source_indexes": []}
+        ],
+        "uncertainties": ["犯规是否达到红牌标准及裁判尺度需结合完整录像和正式比赛记录。"],
+        "summary": "Agent应预测犯规尺度、双方对抗、教练责任和裁判规则四条争议线，同时保留作者愿意看录像再判断的限定。",
+        "sources": [{"title": "Argentina defeats England in World Cup match", "url": "https://apnews.com/article/afa13ed9fa933f8b75bd56eb16546031", "domain": "apnews.com", "excerpt": "比赛结果与赛况背景"}]
+      },
+      "post_text": "刚有球迷抱怨阿根廷踢得脏，我没看全场，只看了一些集锦，我想重申一下，即使我作为一个阿根廷球迷的观点：阿根廷踢得脏，和图赫尔不行，是对立统一的。当然英格兰球迷还是会不服气，因为如果阿根廷被罚下一两个，比赛结果就会不一样，这个等我看了录像，另说。",
+      "profile": {"identity": "阿根廷足球球迷", "domain": "国际足球评论", "follower_scale": "个人账号", "style": "直率、愿意补充核对", "audience_relationship": "受众包含阿根廷与英格兰双方球迷"},
+      "annotations": {
+        "risk_spans": ["只看了一些集锦", "阿根廷踢得脏", "对立统一", "英格兰球迷还是会不服气", "如果阿根廷被罚下一两个"],
+        "controversy_topics": [
+          {"label": "犯规尺度是否足以称为脏", "keywords": ["足球洁癖", "脏谈不上", "小动作", "近身肉搏"]},
+          {"label": "踢得脏与球队或教练表现可以同时成立", "keywords": ["脏是脏", "菜也是真的菜", "同时", "不冲突"]},
+          {"label": "输球关键是否是图赫尔", "keywords": ["图赫尔", "输球关键", "教练"]},
+          {"label": "裁判和规则背景及胜之不武争议", "keywords": ["裁判", "规则", "胜之不武", "世界杯8强"]}
+        ],
+        "preserved_points": [
+          {"label": "承认只看集锦并准备看录像", "keywords": ["集锦", "录像", "没看全场"]},
+          {"label": "犯规问题与执教问题可同时讨论", "keywords": ["阿根廷", "图赫尔", "同时", "都"]}
+        ],
+        "real_comments": ["如果这都叫脏，那真是足球洁癖了", "脏谈不上。上半场双方都是毫无保留的近身肉搏", "脏是脏，菜也是真的菜", "作为英格兰球迷，客观来说这场比赛我并不觉得阿根廷踢的脏，小动作多是有，但是输球的关键不是图赫尔吗", "游戏规则你们定的，裁判你们选的，说难听点世界杯8强7个是欧洲的，还想要什么？我估计英格兰球迷也不好意思再要求更多了吧，也只有云英格兰球迷会认为阿根廷胜之不武"]
+      }
+    },
+    {
+      "id": "CL-EVAL-008",
+      "title": "合作暂停与内部暗示",
+      "source_type": "synthetic",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "和某品牌的合作暂时告一段落。具体原因不方便公开，只能说这次让我看清了很多事。懂的人自然懂，大家以后选择产品时也擦亮眼睛吧。",
+      "profile": {"identity": "生活方式博主", "domain": "消费与日常分享", "follower_scale": "中等体量", "style": "直接、口语化", "audience_relationship": "粉丝信任其产品体验和合作推荐"},
+      "annotations": {
+        "risk_spans": ["不方便公开", "看清了很多事", "懂的人自然懂", "擦亮眼睛"],
+        "controversy_topics": [
+          {"label": "影射品牌存在问题但不给证据", "keywords": ["影射", "品牌有问题", "证据", "说清楚"]},
+          {"label": "引导粉丝猜测合作纠纷", "keywords": ["合作纠纷", "猜测", "解约", "闹翻"]}
+        ],
+        "preserved_points": [{"label": "说明合作已经暂停", "keywords": ["合作", "暂停", "告一段落"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-009",
+      "title": "日程调整低风险对照",
+      "source_type": "synthetic",
+      "expected_risk": "低",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "这周因为需要集中完成课程项目，原定周三的直播调整到周六晚上八点，内容不变。给已经预留时间的朋友添麻烦了，周六见。",
+      "profile": {"identity": "知识类创作者", "domain": "学习与效率", "follower_scale": "中小体量", "style": "清楚、亲切", "audience_relationship": "受众主要通过直播获取内容"},
+      "annotations": {
+        "risk_spans": [],
+        "controversy_topics": [{"label": "少量受众可能时间冲突", "keywords": ["周六没空", "时间冲突", "看回放"]}],
+        "preserved_points": [{"label": "周三改为周六晚八点且内容不变", "keywords": ["周六", "八点", "内容不变"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-010",
+      "title": "科普创作者与知识优越感",
+      "source_type": "synthetic",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "这个问题我已经解释过很多次了。还在评论区问的人，建议先把最基础的概念学明白，而不是张口就质疑。知识有门槛，不是所有意见都值得认真回应。",
+      "profile": {"identity": "科普创作者", "domain": "科学知识", "follower_scale": "中等体量", "style": "专业、直接", "audience_relationship": "受众期待可靠解释，也有大量入门读者"},
+      "annotations": {
+        "risk_spans": ["先把最基础的概念学明白", "张口就质疑", "不是所有意见都值得认真回应"],
+        "controversy_topics": [
+          {"label": "用知识门槛否定正常提问", "keywords": ["提问", "傲慢", "优越感", "门槛"]},
+          {"label": "科普职责与回应边界", "keywords": ["科普", "解释", "重复问题", "回应"]}
+        ],
+        "preserved_points": [{"label": "希望讨论建立在基础概念之上", "keywords": ["基础概念", "知识", "讨论"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-011",
+      "title": "道歉中的责任转移",
+      "source_type": "synthetic",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "这次内容出现错误，我向大家道歉。但如果不是有人截取片段、带节奏，事情也不会发展到现在这样。希望大家理性一点，不要再被别有用心的人利用。",
+      "profile": {"identity": "知识类创作者", "domain": "社会知识分享", "follower_scale": "中等体量", "style": "理性、坦诚", "audience_relationship": "受众重视准确性与责任感"},
+      "annotations": {
+        "risk_spans": ["但如果不是", "带节奏", "希望大家理性一点", "别有用心的人"],
+        "controversy_topics": [
+          {"label": "道歉后立即把责任推给他人", "keywords": ["甩锅", "责任转移", "道歉不真诚", "怪别人"]},
+          {"label": "没有说明纠错和补救", "keywords": ["怎么改", "纠错", "补救", "错误内容"]}
+        ],
+        "preserved_points": [{"label": "承认内容有错误并道歉", "keywords": ["错误", "道歉"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-012",
+      "title": "产品推荐与商业披露不完整",
+      "source_type": "synthetic",
+      "expected_risk": "中",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "最近一直在用这款护肤品，使用感确实不错，链接放在评论区，有需要的可以看看。品牌寄了产品给我体验，但这完全不影响我的真实评价。",
+      "profile": {"identity": "美妆博主", "domain": "护肤产品测评", "follower_scale": "中小体量", "style": "亲切、生活化", "audience_relationship": "受众依据其体验决定是否购买"},
+      "annotations": {
+        "risk_spans": ["品牌寄了产品", "完全不影响我的真实评价"],
+        "controversy_topics": [
+          {"label": "是否还有佣金或其他商业关系", "keywords": ["佣金", "广告", "合作", "返利"]},
+          {"label": "赠品可能影响评价独立性", "keywords": ["寄送", "利益关系", "客观", "独立"]}
+        ],
+        "preserved_points": [{"label": "披露品牌寄送并表达真实体验", "keywords": ["品牌寄", "体验", "真实评价"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-013",
+      "title": "合理电影观点分歧",
+      "source_type": "synthetic",
+      "expected_risk": "低",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "昨晚看完这部电影，我个人更喜欢前半段的节奏和人物互动，后半段的大场面反而让我有些出戏。不过视觉效果确实很出色，喜欢动作场面的朋友可能会更享受。",
+      "profile": {"identity": "普通影迷", "domain": "电影观后感", "follower_scale": "个人账号", "style": "平和、具体", "audience_relationship": "朋友和同好为主"},
+      "annotations": {
+        "risk_spans": [],
+        "controversy_topics": [{"label": "观众对前后半段节奏偏好不同", "keywords": ["后半段", "节奏", "动作场面", "个人偏好"]}],
+        "preserved_points": [{"label": "偏爱前半段但认可视觉效果", "keywords": ["前半段", "视觉效果", "动作场面"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-014",
+      "title": "抽奖规则临时修改",
+      "source_type": "synthetic",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "发现这次抽奖有不少只为奖品来的新账号，所以临时加一条：中奖者必须关注满三个月，否则顺延。真正支持我的老粉应该都能理解，不接受规则的可以退出。",
+      "profile": {"identity": "生活类创作者", "domain": "日常分享与粉丝活动", "follower_scale": "中等体量", "style": "直接、重视老粉", "audience_relationship": "通过互动与抽奖维护粉丝关系"},
+      "annotations": {
+        "risk_spans": ["临时加一条", "真正支持我的老粉", "不接受规则的可以退出"],
+        "controversy_topics": [
+          {"label": "活动开始后改规则不公平", "keywords": ["临时改规则", "不公平", "事后加条件", "规则"]},
+          {"label": "用粉籍判断正当质疑", "keywords": ["老粉", "真爱粉", "道德绑架", "退出"]}
+        ],
+        "preserved_points": [{"label": "希望奖品回馈长期关注者", "keywords": ["长期", "老粉", "支持"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-015",
+      "title": "离职声明影射前公司",
+      "source_type": "synthetic",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "今天正式离开工作了五年的公司。感谢真正帮助过我的同事，至于那些表面一套、背后一套的人，时间会给出答案。有些内幕现在不能说，以后有机会再聊。",
+      "profile": {"identity": "职场内容创作者", "domain": "职场经历", "follower_scale": "中小体量", "style": "克制中带情绪", "audience_relationship": "受众关注其职业经历和行业信息"},
+      "annotations": {
+        "risk_spans": ["表面一套、背后一套", "时间会给出答案", "有些内幕现在不能说"],
+        "controversy_topics": [
+          {"label": "影射前同事或公司但没有证据", "keywords": ["影射", "内幕", "证据", "前公司"]},
+          {"label": "诱导网友猜测具体对象", "keywords": ["是谁", "猜", "点名", "吃瓜"]}
+        ],
+        "preserved_points": [{"label": "宣布离职并感谢帮助者", "keywords": ["离开", "感谢", "同事"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-016",
+      "title": "活动取消及退款通知",
+      "source_type": "synthetic",
+      "expected_risk": "中",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "因场地方临时出现安全隐患，本周六的线下活动取消。已购票用户将在3个工作日内原路收到全额退款，交通和住宿损失可在周五18点前通过表单提交凭证，我们将在核验后联系处理。给大家造成的不便，非常抱歉。",
+      "profile": {"identity": "活动主办方", "domain": "线下文化活动", "follower_scale": "中等体量", "style": "正式、清楚", "audience_relationship": "受众已经购票并可能产生额外出行成本"},
+      "annotations": {
+        "risk_spans": ["核验后联系处理"],
+        "controversy_topics": [
+          {"label": "用户关心交通住宿损失如何赔付", "keywords": ["交通", "住宿", "赔付", "凭证"]},
+          {"label": "取消本身会引发不满但通知较完整", "keywords": ["取消", "失望", "退款", "安全"]}
+        ],
+        "preserved_points": [{"label": "取消、退款时间和额外损失渠道完整", "keywords": ["取消", "3个工作日", "全额退款", "表单"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-017",
+      "title": "完整广告披露低风险对照",
+      "source_type": "synthetic",
+      "expected_risk": "低",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "广告合作说明：本期视频由A品牌付费赞助，品牌寄送了样品并提供固定合作费用，链接成交我不获得额外佣金。以下体验基于连续两周使用，优点和不适合的人群都会在视频中说明。",
+      "profile": {"identity": "数码测评博主", "domain": "产品测评", "follower_scale": "中等体量", "style": "透明、专业", "audience_relationship": "受众看重商业披露和测评独立性"},
+      "annotations": {
+        "risk_spans": [],
+        "controversy_topics": [{"label": "少量受众仍会质疑付费测评独立性", "keywords": ["付费", "客观", "独立", "广告"]}],
+        "preserved_points": [{"label": "完整披露赞助、样品、费用和佣金", "keywords": ["付费赞助", "样品", "合作费用", "不获得额外佣金"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-018",
+      "title": "家庭隐私边界与评论管理",
+      "source_type": "synthetic",
+      "expected_risk": "低",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "谢谢大家关心家人的近况，但这部分属于他们的私人生活，之后我不会再公开回应相关问题。涉及姓名、住址等信息的评论会删除，也请不要私信追问。其他和内容有关的意见仍然欢迎讨论。",
+      "profile": {"identity": "生活类创作者", "domain": "家庭与日常", "follower_scale": "中小体量", "style": "温和、边界清楚", "audience_relationship": "长期关注者对其家庭生活较熟悉"},
+      "annotations": {
+        "risk_spans": [],
+        "controversy_topics": [{"label": "隐私删除边界清楚且保留内容讨论", "keywords": ["隐私", "删除", "边界", "理解"]}],
+        "preserved_points": [{"label": "不公开家人隐私并删除敏感信息", "keywords": ["私人生活", "姓名", "住址", "删除"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-019",
+      "title": "公益募捐透明度",
+      "source_type": "synthetic",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "这次募捐已经筹到不少钱，具体金额就不公开了，大家相信我们会把钱用在真正需要的地方。因为公布明细会增加很多工作，也可能暴露受助者隐私，所以之后不再回应账目问题。",
+      "profile": {"identity": "公益项目发起人", "domain": "公益募捐", "follower_scale": "中等体量", "style": "热情、强调信任", "audience_relationship": "捐赠者期待资金用途透明且尊重受助者隐私"},
+      "annotations": {
+        "risk_spans": ["具体金额就不公开了", "大家相信我们", "不再回应账目问题"],
+        "controversy_topics": [
+          {"label": "募捐金额和用途需要可核验", "keywords": ["账目", "明细", "金额", "审计"]},
+          {"label": "保护隐私不等于不能公开脱敏信息", "keywords": ["脱敏", "隐私", "公开", "汇总"]},
+          {"label": "要求信任不能替代透明责任", "keywords": ["信任", "透明", "监督", "责任"]}
+        ],
+        "preserved_points": [{"label": "资金用于有需要的人并保护受助者隐私", "keywords": ["需要", "受助者", "隐私"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-020",
+      "title": "付费内容调整与受众指责",
+      "source_type": "synthetic",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "下个月起部分深度内容将调整为付费阅读。免费内容看了这么久，还有人因为十几块钱抱怨，多少有点习惯白嫖了。真正认可知识价值的人，自然知道一杯奶茶钱换一篇干货很划算。",
+      "profile": {"identity": "知识类创作者", "domain": "行业分析", "follower_scale": "中等体量", "style": "直接、有专业自信", "audience_relationship": "长期同时提供免费与深度内容"},
+      "annotations": {
+        "risk_spans": ["习惯白嫖", "真正认可知识价值的人", "一杯奶茶钱"],
+        "controversy_topics": [
+          {"label": "把价格异议归为不尊重知识", "keywords": ["白嫖", "不认可知识", "价格异议", "道德绑架"]},
+          {"label": "奶茶类比忽略支付能力和内容价值判断", "keywords": ["奶茶", "支付能力", "值不值", "类比"]},
+          {"label": "支持付费模式但反感指责用户", "keywords": ["可以付费", "支持收费", "别骂用户", "态度"]}
+        ],
+        "preserved_points": [{"label": "宣布部分深度内容转为付费", "keywords": ["下个月", "深度内容", "付费"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-021",
+      "title": "AI写作与多重逻辑谬误",
+      "source_type": "synthetic",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "真正会写作的人根本不会用AI，因为用了AI就说明没有自己的表达。现在为AI写作辩护的人，无非是想掩饰能力不足。今天允许它润色，明天就会让它代写，最后所有文章都会变成机器拼出来的垃圾。要么坚持纯人工，要么就别自称作者。",
+      "profile": {"identity": "写作爱好者", "domain": "文学与创作", "follower_scale": "中小体量", "style": "立场鲜明、重视原创", "audience_relationship": "受众对AI辅助创作持不同立场"},
+      "annotations": {
+        "risk_spans": ["真正会写作的人", "无非是想掩饰能力不足", "最后所有文章都会", "要么坚持纯人工，要么就别自称作者"],
+        "controversy_topics": [
+          {"label": "用纯粹作者定义循环论证", "keywords": ["真正作者", "循环论证", "定义", "纯人工"]},
+          {"label": "把所有辩护者归因为能力不足", "keywords": ["动机", "能力不足", "以偏概全", "人身攻击"]},
+          {"label": "从润色滑坡到全部机器垃圾", "keywords": ["滑坡", "润色", "代写", "所有文章"]},
+          {"label": "纯人工或不配称作者是假两难", "keywords": ["假两难", "二选一", "辅助工具", "作者"]}
+        ],
+        "preserved_points": [{"label": "担忧AI削弱原创表达和作者责任", "keywords": ["自己的表达", "原创", "作者", "代写"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-022",
+      "title": "短视频与注意力因果推断",
+      "source_type": "synthetic",
+      "expected_risk": "中",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "现在年轻人越来越难静下心读书，显然就是短视频刷多了。以前没有短视频时，大家都能耐心看完一本书；只要卸载短视频软件，专注力自然就会回来。",
+      "profile": {"identity": "阅读推广者", "domain": "阅读与学习", "follower_scale": "中小体量", "style": "简洁、劝导性强", "audience_relationship": "受众包含学生、家长和阅读爱好者"},
+      "annotations": {
+        "risk_spans": ["显然就是短视频刷多了", "大家都能", "只要卸载", "自然就会回来"],
+        "controversy_topics": [
+          {"label": "相关性不能直接证明单一因果", "keywords": ["因果", "相关", "单一原因", "证据"]},
+          {"label": "过去所有人都能读书是过度概括", "keywords": ["以前", "所有人", "大家都", "以偏概全"]},
+          {"label": "卸载软件未必足以恢复专注", "keywords": ["卸载", "专注力", "习惯", "不一定"]}
+        ],
+        "preserved_points": [{"label": "担忧短视频使用影响深度阅读", "keywords": ["短视频", "读书", "专注力"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-023",
+      "title": "教育价值与幸存者偏差",
+      "source_type": "synthetic",
+      "expected_risk": "中",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "我认识的几个创业成功的人大学都没毕业，这说明学历对真正有能力的人没什么用。与其花四年学理论，不如早点进入社会；那些坚持读大学的人，很多只是没有冒险的勇气。",
+      "profile": {"identity": "创业经验分享者", "domain": "职业发展", "follower_scale": "中小体量", "style": "直接、强调行动", "audience_relationship": "受众多为学生和职场新人"},
+      "annotations": {
+        "risk_spans": ["几个创业成功的人", "这说明学历", "真正有能力的人", "只是没有冒险的勇气"],
+        "controversy_topics": [
+          {"label": "只看成功辍学者属于幸存者偏差", "keywords": ["幸存者偏差", "失败者", "样本", "几个"]},
+          {"label": "创业成功不能推出学历无用", "keywords": ["学历无用", "因果", "不能说明", "教育价值"]},
+          {"label": "把读大学归因于缺乏勇气是动机猜测", "keywords": ["勇气", "动机", "选择", "风险"]}
+        ],
+        "preserved_points": [{"label": "强调实践经验和较早行动的价值", "keywords": ["实践", "进入社会", "创业", "行动"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-024",
+      "title": "返岗制度与错误因果归因",
+      "source_type": "synthetic",
+      "expected_risk": "中",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "公司恢复全员坐班后，项目进度马上变快了，足以证明远程办公就是效率低。管理层既然比员工掌握更多数据，这个决定当然更专业。过去公司一直靠办公室协作成功，现在反对返岗的人，要么是不愿负责，要么就是想偷懒。",
+      "profile": {"identity": "企业管理者", "domain": "组织管理", "follower_scale": "中小体量", "style": "强调结果和纪律", "audience_relationship": "受众包含管理者和普通员工"},
+      "annotations": {
+        "risk_spans": ["足以证明", "当然更专业", "一直靠办公室协作成功", "要么是不愿负责，要么就是想偷懒"],
+        "controversy_topics": [
+          {"label": "返岗后变快不证明返岗是唯一原因", "keywords": ["因果", "其他因素", "项目阶段", "足以证明"]},
+          {"label": "管理层掌握数据不等于决定必然正确", "keywords": ["诉诸权威", "管理层", "数据", "必然正确"]},
+          {"label": "传统成功不能证明当前制度最优", "keywords": ["诉诸传统", "过去", "办公室", "最优"]},
+          {"label": "反对返岗不只有不负责或偷懒", "keywords": ["假两难", "偷懒", "通勤", "工作方式"]}
+        ],
+        "preserved_points": [{"label": "观察到返岗后项目进度变快", "keywords": ["恢复", "坐班", "项目进度", "变快"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-025",
+      "title": "抄袭争议与诉诸人气",
+      "source_type": "synthetic",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "有人说我的作品抄袭，我只想问：这么多人喜欢，难道大家都看不出来好坏吗？对方自己以前也借鉴过别人的风格，有什么资格指责我？艺术本来就是互相影响，只要不是逐字照搬，就不能叫抄袭。",
+      "profile": {"identity": "独立创作者", "domain": "视觉艺术", "follower_scale": "中等体量", "style": "自信、直接回应争议", "audience_relationship": "有稳定粉丝，也受同行关注"},
+      "annotations": {
+        "risk_spans": ["这么多人喜欢", "有什么资格指责我", "只要不是逐字照搬，就不能叫抄袭"],
+        "controversy_topics": [
+          {"label": "受欢迎不能证明没有抄袭", "keywords": ["诉诸人气", "喜欢的人多", "不能证明", "抄袭"]},
+          {"label": "指责对方也借鉴是你也一样", "keywords": ["你也一样", "转移话题", "资格", "对方"]},
+          {"label": "抄袭不只限于逐字照搬", "keywords": ["逐字照搬", "构图", "表达", "概念混淆"]}
+        ],
+        "preserved_points": [{"label": "认为艺术存在正常借鉴和相互影响", "keywords": ["艺术", "借鉴", "互相影响"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-026",
+      "title": "演员合同传闻与沉默即承认",
+      "source_type": "synthetic",
+      "expected_risk": "高",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "关于某演员拒绝续约的消息，工作室到现在都没否认，基本就等于默认了。好几个大号都在转，不可能大家一起造谣。如果消息是假的，应该由工作室拿证据证明，而不是让网友继续猜。",
+      "profile": {"identity": "娱乐资讯账号", "domain": "明星与影视资讯", "follower_scale": "中等体量", "style": "快速、判断明确", "audience_relationship": "受众依赖其汇总娱乐消息"},
+      "annotations": {
+        "risk_spans": ["没否认，基本就等于默认", "好几个大号都在转", "不可能大家一起造谣", "应该由工作室拿证据证明"],
+        "controversy_topics": [
+          {"label": "沉默不能直接等于承认", "keywords": ["沉默", "默认", "不能证明", "未回应"]},
+          {"label": "多人转载不等于消息真实", "keywords": ["大号", "转载", "循环信源", "造谣"]},
+          {"label": "举证责任被倒置", "keywords": ["举证责任", "拿证据", "谁主张", "证明"]}
+        ],
+        "preserved_points": [{"label": "说明传闻存在且工作室尚未回应", "keywords": ["消息", "工作室", "没否认", "尚未回应"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-027",
+      "title": "App投入与沉没成本",
+      "source_type": "synthetic",
+      "expected_risk": "中",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "这个App已经开发两年、投入几百万了，现在数据虽然不好，也绝不能停。之前花的钱不能白费，只要继续投下去总会找到用户。现在退出等于承认前面的决策全部错误，公司只剩坚持到底这一条路。",
+      "profile": {"identity": "创业者", "domain": "互联网产品", "follower_scale": "中小体量", "style": "坚定、强调执行力", "audience_relationship": "受众关注创业决策和产品经营"},
+      "annotations": {
+        "risk_spans": ["之前花的钱不能白费", "总会找到用户", "退出等于承认", "只剩坚持到底这一条路"],
+        "controversy_topics": [
+          {"label": "过去投入属于沉没成本", "keywords": ["沉没成本", "过去投入", "不能白费", "未来回报"]},
+          {"label": "继续投入不保证找到用户", "keywords": ["不保证", "用户", "数据", "验证"]},
+          {"label": "停止、转型和继续并非只有二选一", "keywords": ["假两难", "转型", "止损", "选择"]}
+        ],
+        "preserved_points": [{"label": "项目已有长期投入且希望寻找用户", "keywords": ["开发两年", "投入", "用户"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-028",
+      "title": "评论管理与滑坡谬误",
+      "source_type": "synthetic",
+      "expected_risk": "中",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "平台开始删除辱骂评论，有人却说这是限制表达。可如果连这种管理都反对，下一步是不是连造谣和威胁也要保护？支持不删评论的人，说到底就是希望网络没有任何规则。",
+      "profile": {"identity": "社会议题评论者", "domain": "网络社区治理", "follower_scale": "中等体量", "style": "鲜明、善于反问", "audience_relationship": "受众对言论边界和平台治理分歧明显"},
+      "annotations": {
+        "risk_spans": ["下一步是不是连造谣和威胁也要保护", "说到底就是希望网络没有任何规则"],
+        "controversy_topics": [
+          {"label": "质疑删除标准不等于支持造谣威胁", "keywords": ["不等于", "删除标准", "造谣", "威胁"]},
+          {"label": "从反对具体管理滑坡到反对所有规则", "keywords": ["滑坡", "所有规则", "具体管理", "扩大"]},
+          {"label": "把立场归因为无规则愿望是动机猜测", "keywords": ["动机", "说到底", "猜测", "规则"]}
+        ],
+        "preserved_points": [{"label": "支持治理辱骂、造谣和威胁", "keywords": ["辱骂", "造谣", "威胁", "管理"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-029",
+      "title": "环保中的个人责任与结构责任",
+      "source_type": "synthetic",
+      "expected_risk": "中",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "总有人说环保主要靠企业和制度，这不过是在给自己的浪费找借口。一个连外卖餐具都不肯拒绝的人，根本没资格批评高排放企业。只要每个人都把生活做到零浪费，环境问题自然会解决；做不到就说明并不真正关心地球。",
+      "profile": {"identity": "环保生活博主", "domain": "可持续生活", "follower_scale": "中小体量", "style": "倡议性强、标准严格", "audience_relationship": "受众认可环保但实践条件不同"},
+      "annotations": {
+        "risk_spans": ["不过是在给自己的浪费找借口", "根本没资格", "只要每个人", "做不到就说明并不真正关心地球"],
+        "controversy_topics": [
+          {"label": "个人不完美不取消其批评结构问题的资格", "keywords": ["完美主义", "没资格", "个人不完美", "结构问题"]},
+          {"label": "个人行动与企业制度责任可以并存", "keywords": ["企业", "制度", "个人行动", "并存"]},
+          {"label": "零浪费并非人人可行也不足以单独解决", "keywords": ["零浪费", "成本", "条件", "不能解决"]}
+        ],
+        "preserved_points": [{"label": "倡导个人减少浪费并承担责任", "keywords": ["个人", "浪费", "环保", "责任"]}],
+        "real_comments": []
+      }
+    },
+    {
+      "id": "CL-EVAL-030",
+      "title": "AI裁员与错误因果推断",
+      "source_type": "synthetic",
+      "expected_risk": "中",
+      "search_background": false,
+      "event_hint": "",
+      "post_text": "公司引入AI工具后三个月就开始裁员，这已经说明AI必然会抢走人的工作。今天被替代的是客服和文案，明天就会轮到程序员和医生，最后普通人都没有工作。面对这种趋势，要么全面禁止企业使用AI，要么接受大规模失业，没有第三条路。",
+      "profile": {"identity": "职场观察者", "domain": "科技与就业", "follower_scale": "中等体量", "style": "关注普通劳动者、表达直接", "audience_relationship": "受众关心AI带来的职业变化"},
+      "annotations": {
+        "risk_spans": ["这已经说明AI必然会", "明天就会轮到", "最后普通人都没有工作", "要么全面禁止", "没有第三条路"],
+        "controversy_topics": [
+          {"label": "时间先后不能证明裁员完全由AI造成", "keywords": ["因果", "公司经营", "成本", "三个月"]},
+          {"label": "从部分岗位变化推到所有人失业是滑坡", "keywords": ["滑坡", "所有人", "岗位变化", "必然"]},
+          {"label": "全面禁止或大失业是假两难", "keywords": ["假两难", "监管", "转岗", "第三条路"]}
+        ],
+        "preserved_points": [{"label": "担忧AI对就业和劳动者造成冲击", "keywords": ["AI", "裁员", "工作", "就业"]}],
+        "real_comments": []
+      }
+    }
+  ]
+}

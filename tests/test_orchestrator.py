@@ -50,6 +50,21 @@ def test_audience_is_restricted_to_report_personas(orchestrator) -> None:
     assert "invented_persona" not in {persona.persona_id for persona in cleaned.personas}
 
 
+def test_prepare_uses_one_combined_model_stage(orchestrator, profile) -> None:
+    stages = []
+    original = orchestrator.gateway.invoke_structured
+
+    def record_stage(**kwargs):
+        stages.append(kwargs["stage"])
+        return original(**kwargs)
+
+    orchestrator.gateway.invoke_structured = record_stage
+    prepared = orchestrator.prepare("我们将在下周公布活动的具体安排。", profile)
+    assert stages == ["preparation"]
+    assert prepared.analysis.main_message
+    assert len(prepared.audience.personas) == 12
+
+
 @pytest.mark.parametrize("case_index", [0, 1, 2])
 def test_all_demo_cases_complete_end_to_end(orchestrator, profile, case_index: int) -> None:
     cases = json.loads((DATA_DIR / "demo_cases.json").read_text(encoding="utf-8"))

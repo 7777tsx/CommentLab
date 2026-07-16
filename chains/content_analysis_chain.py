@@ -61,6 +61,49 @@ EMOTIONAL_RULES = {
 }
 
 
+def _evidence_band(units: float) -> int:
+    """Map countable analysis evidence to a stable, inspectable 1-5 score."""
+    if units <= 0:
+        return 1
+    if units < 1.0:
+        return 2
+    if units < 2.5:
+        return 3
+    if units < 4.0:
+        return 4
+    return 5
+
+
+def deterministic_text_scores(analysis: ContentAnalysis) -> RiskScores:
+    """Score only from fields displayed in the analysis, not model arithmetic."""
+    tone = analysis.tone.lower()
+    negative_tone = any(
+        marker in tone
+        for marker in ("攻击", "嘲讽", "指责", "愤怒", "强硬", "讽刺", "贬低")
+    )
+    return RiskScores(
+        misunderstanding_risk=_evidence_band(
+            len(analysis.ambiguous_phrases) * 0.70
+            + len(analysis.missing_information) * 0.55
+            + len(analysis.possible_misreadings) * 0.65
+            + len(analysis.unsupported_inferences) * 0.45
+        ),
+        negative_emotion_risk=_evidence_band(
+            len(analysis.emotional_phrases) * 0.80
+            + len(analysis.persona_conflicts) * 0.55
+            + (0.70 if negative_tone else 0.0)
+        ),
+        conflict_risk=_evidence_band(
+            len(analysis.audience_conflicts) * 0.60
+            + len(analysis.persona_conflicts) * 0.60
+        ),
+        off_topic_risk=_evidence_band(
+            len(analysis.quotable_phrases) * 0.70
+            + len(analysis.unsupported_inferences) * 0.45
+        ),
+    )
+
+
 class ContentAnalysisChain:
     def __init__(self, gateway: ModelGateway):
         self.gateway = gateway
@@ -114,6 +157,16 @@ class ContentAnalysisChain:
                 "emotional_phrases": emotional,
                 "quotable_phrases": quotable,
                 "persona_conflicts": persona_conflicts,
+                "risk_scores": deterministic_text_scores(
+                    analysis.model_copy(
+                        update={
+                            "ambiguous_phrases": ambiguous,
+                            "emotional_phrases": emotional,
+                            "quotable_phrases": quotable,
+                            "persona_conflicts": persona_conflicts,
+                        }
+                    )
+                ),
             }
         )
 

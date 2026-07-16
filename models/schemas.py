@@ -109,6 +109,13 @@ class AudiencePlan(StrictModel):
         return AudiencePlan(personas=personas, group_ratios=ratios, rationale=self.rationale)
 
 
+class PreparationDraft(StrictModel):
+    """One model response containing both analysis and the editable audience draft."""
+
+    analysis: ContentAnalysis
+    audience: AudiencePlan
+
+
 def normalize_ratios(ratios: dict[str, float]) -> dict[str, float]:
     total = sum(max(0.0, value) for value in ratios.values())
     if total <= 0:
@@ -267,11 +274,20 @@ class RiskReport(StrictModel):
         return migrated
 
 
+class RepairCheck(StrictModel):
+    target_id: str
+    source_span: str
+    required_action: Literal["remove_or_reframe", "clarify", "qualify"]
+    resolved: bool
+    explanation: str
+
+
 class RewriteResult(StrictModel):
     rewritten_post: str = Field(min_length=1, max_length=500)
     preserved_elements: list[str]
     repaired_risks: list[str]
     explanation: str
+    repair_checks: list[RepairCheck] = Field(default_factory=list)
 
 
 class ComparisonReport(StrictModel):

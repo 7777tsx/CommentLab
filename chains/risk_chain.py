@@ -14,15 +14,70 @@ from services.llm_client import ModelGateway
 
 
 def risk_level(score: float) -> str:
-    if score < 2.0:
+    if score < 2.5:
         return "低"
-    if score < 3.5:
+    if score < 3.1:
         return "中"
     return "高"
 
 
 def final_risk_score(text_analysis_score: float, simulation_score: float) -> float:
     return round(text_analysis_score * 0.25 + simulation_score * 0.75, 3)
+
+
+def _ratio_band(value: float) -> int:
+    """Convert an observable 0-1 ratio to a stable five-point band."""
+    if value < 0.10:
+        return 1
+    if value < 0.25:
+        return 2
+    if value < 0.45:
+        return 3
+    if value < 0.65:
+        return 4
+    return 5
+
+
+def deterministic_simulation_scores(simulation: SimulationResult) -> RiskScores:
+    """Calculate risk components from comments and interaction structure."""
+    comments = simulation.comments
+    if not comments:
+        return RiskScores(
+            misunderstanding_risk=1,
+            negative_emotion_risk=1,
+            conflict_risk=1,
+            off_topic_risk=1,
+        )
+
+    size = len(comments)
+    replies = [comment for comment in comments if comment.parent_id]
+    late_comments = [comment for comment in comments if comment.round_no > 1]
+    late_misunderstanding = (
+        sum(comment.misunderstanding for comment in late_comments) / len(late_comments)
+        if late_comments
+        else 0.0
+    )
+    average_intensity = sum(comment.emotion_intensity for comment in comments) / size
+    average_controversy = sum(comment.controversy for comment in comments) / size
+    conflict_ratio = min(
+        1.0,
+        simulation.metrics.conflict_reply_count / max(1, len(replies)),
+    )
+
+    misunderstanding_signal = (
+        simulation.metrics.misunderstanding_ratio * 0.75
+        + late_misunderstanding * 0.25
+    )
+    negative_signal = (
+        simulation.metrics.negative_ratio * 0.70 + average_intensity * 0.30
+    )
+    conflict_signal = conflict_ratio * 0.65 + average_controversy * 0.35
+    return RiskScores(
+        misunderstanding_risk=_ratio_band(misunderstanding_signal),
+        negative_emotion_risk=_ratio_band(negative_signal),
+        conflict_risk=_ratio_band(conflict_signal),
+        off_topic_risk=_ratio_band(simulation.metrics.off_topic_ratio),
+    )
 
 
 class RiskChain:
@@ -64,11 +119,13 @@ class RiskChain:
         )
         candidate = self._ensure_anchored_chains(post_text, candidate)
         # Scoring is a deterministic product rule, never delegated to model arithmetic.
-        simulation_score = candidate.risk_scores.weighted_score()
+        risk_scores = deterministic_simulation_scores(simulation)
+        simulation_score = risk_scores.weighted_score()
         final_score = final_risk_score(analysis.text_analysis_score, simulation_score)
         return candidate.model_copy(
             update={
                 "overall_level": risk_level(final_score),
+                "risk_scores": risk_scores,
                 "text_analysis_score": analysis.text_analysis_score,
                 "simulation_score": simulation_score,
                 "final_score": final_score,

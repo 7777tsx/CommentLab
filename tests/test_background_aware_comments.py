@@ -94,6 +94,7 @@ def test_all_agents_receive_the_same_validated_background(
     )
     gateway = CapturingGateway()
     for chain in (
+        orchestrator.preparation_chain,
         orchestrator.content_chain,
         orchestrator.audience_chain,
         orchestrator.comment_chain,
@@ -113,8 +114,7 @@ def test_all_agents_receive_the_same_validated_background(
 
     expected = CommentLabOrchestrator._shared_background(research)
     required_stages = {
-        "content_analysis",
-        "audience_plan",
+        "preparation",
         "risk_before",
         "rewrite",
         "risk_after",
