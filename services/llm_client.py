@@ -38,7 +38,10 @@ class ModelGateway:
     def demo_mode(self) -> bool:
         return not self.settings.live_ready
 
-    def _cache_key(self, stage: str, payload: dict) -> str:
+    def _cache_key(self, stage: str, payload: dict, system_prompt: str) -> str:
+        prompt_fingerprint = hashlib.sha256(
+            system_prompt.encode("utf-8")
+        ).hexdigest()
         raw = json.dumps(
             {
                 "stage": stage,
@@ -46,6 +49,8 @@ class ModelGateway:
                 "model": self.settings.model,
                 "base_url": self.settings.base_url,
                 "temperature": self.settings.temperature,
+                "prompt_version": self.settings.prompt_version,
+                "prompt_fingerprint": prompt_fingerprint,
             },
             ensure_ascii=False,
             sort_keys=True,
@@ -78,7 +83,7 @@ class ModelGateway:
         if self.demo_mode:
             return fallback()
 
-        cache_key = self._cache_key(stage, payload)
+        cache_key = self._cache_key(stage, payload, system_prompt)
         cached = self.database.cache_get(cache_key)
         if cached:
             return schema.model_validate_json(cached)

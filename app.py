@@ -694,26 +694,6 @@ if st.session_state.stage == 1:
     )
     input_panel = st.empty()
     with input_panel.container():
-        with st.container(border=True, key="input_online_card"):
-            st.markdown("#### 联网设置")
-            online_toggle, online_note = st.columns([1, 2], vertical_alignment="center")
-            with online_toggle:
-                search_background = st.checkbox(
-                    "联网核对公开事件背景",
-                    value=True,
-                    key="search_background_enabled",
-                    help="开启后，系统会搜索帖子可能指代的公开事件，并向所有评论 Agent 提供相同的精简背景。",
-                )
-            with online_note:
-                st.caption("开启后将自动联网核对，并让所有评论 Agent 共享同一份精简背景。")
-            if search_background:
-                event_hint = st.text_input(
-                    "事件线索（可选）",
-                    placeholder="例如：事件名称、人物、机构或大致时间",
-                    help="帖子指代不明确时，补充线索可以减少搜索歧义。",
-                )
-            else:
-                event_hint = ""
         publisher_memories = orchestrator.database.list_publishers()
         selected_publisher_id = None
         publisher_name = ""
@@ -756,6 +736,26 @@ if st.session_state.stage == 1:
                     key="publisher_new_name",
                     placeholder="例如：小红书摄影号 / 学生会公众号 / 个人账号A",
                 )
+        with st.container(border=True, key="input_online_card"):
+            st.markdown("#### 联网设置")
+            online_toggle, online_note = st.columns([1, 2], vertical_alignment="center")
+            with online_toggle:
+                search_background = st.checkbox(
+                    "联网核对公开事件背景",
+                    value=True,
+                    key="search_background_enabled",
+                    help="开启后，系统会搜索帖子可能指代的公开事件，并向所有评论 Agent 提供相同的精简背景。",
+                )
+            with online_note:
+                st.caption("开启后将自动联网核对，并让所有评论 Agent 共享同一份精简背景。")
+            if search_background:
+                event_hint = st.text_input(
+                    "事件线索（可选）",
+                    placeholder="例如：事件名称、人物、机构或大致时间",
+                    help="帖子指代不明确时，补充线索可以减少搜索歧义。",
+                )
+            else:
+                event_hint = ""
         with st.form("input_form", border=False):
             with st.container(border=True, key="input_post_card"):
                 st.markdown("#### 帖子内容")

@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 ROOT_DIR = Path(__file__).resolve().parent
 load_dotenv(ROOT_DIR / ".env")
+DEFAULT_PROMPT_VERSION = "2026-07-18.1"
 
 
 def _as_bool(value: str | None, default: bool = False) -> bool:
@@ -28,6 +29,7 @@ class Settings:
     database_path: Path = ROOT_DIR / "commentlab.db"
     web_search_enabled: bool = True
     web_search_model: str = ""
+    prompt_version: str = DEFAULT_PROMPT_VERSION
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -47,6 +49,10 @@ class Settings:
                 os.getenv("WEB_SEARCH_ENABLED"), default=True
             ),
             web_search_model=os.getenv("WEB_SEARCH_MODEL", "").strip() or model,
+            prompt_version=(
+                os.getenv("PROMPT_VERSION", DEFAULT_PROMPT_VERSION).strip()
+                or DEFAULT_PROMPT_VERSION
+            ),
         )
 
     @property
@@ -55,4 +61,3 @@ class Settings:
 
 
 settings = Settings.from_env()
-

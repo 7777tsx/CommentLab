@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 from config import Settings
 from models.schemas import RewriteResult
 from services.database import Database
@@ -72,3 +74,34 @@ def test_live_gateway_repairs_raw_invalid_json_and_caches(tmp_path) -> None:
     second = gateway.invoke_structured(**kwargs)
     assert first == second
     assert fake.structured.calls == 1
+
+    gateway.invoke_structured(**{**kwargs, "system_prompt": "changed prompt"})
+    assert fake.structured.calls == 2
+
+
+def test_cache_key_isolated_by_prompt_version_and_fingerprint(tmp_path) -> None:
+    settings = Settings(
+        api_key="test",
+        base_url="https://example.invalid/v1",
+        model="test-model",
+        demo_mode=False,
+        database_path=tmp_path / "cache.db",
+        prompt_version="prompt-v1",
+    )
+    gateway_v1 = ModelGateway(settings, Database(settings.database_path))
+    key_v1 = gateway_v1._cache_key("rewrite", {"post": "test"}, "prompt A")
+
+    assert key_v1 == gateway_v1._cache_key(
+        "rewrite", {"post": "test"}, "prompt A"
+    )
+    assert key_v1 != gateway_v1._cache_key(
+        "rewrite", {"post": "test"}, "prompt B"
+    )
+
+    gateway_v2 = ModelGateway(
+        replace(settings, prompt_version="prompt-v2"),
+        Database(settings.database_path),
+    )
+    assert key_v1 != gateway_v2._cache_key(
+        "rewrite", {"post": "test"}, "prompt A"
+    )
