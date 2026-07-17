@@ -4,8 +4,9 @@ import json
 import sqlite3
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
-from models.schemas import HistoryItem, ProjectResult
+from models.schemas import HistoryItem, ProjectResult, PublisherMemory, PublisherProfile
 
 
 SCHEMA = """
@@ -18,6 +19,16 @@ CREATE TABLE IF NOT EXISTS projects (
     overall_risk_before TEXT,
     overall_risk_after TEXT,
     result_json TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS publishers (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    post_count INTEGER NOT NULL DEFAULT 0,
+    profile_json TEXT NOT NULL,
+    profile_summary TEXT NOT NULL,
+    recent_posts_json TEXT NOT NULL DEFAULT '[]'
 );
 CREATE TABLE IF NOT EXISTS personas (
     id TEXT NOT NULL,
@@ -88,6 +99,95 @@ class Database:
                      stage=excluded.stage, response_json=excluded.response_json""",
                 (cache_key, stage, response_json),
             )
+
+    def list_publishers(self) -> list[PublisherMemory]:
+        with self.connect() as connection:
+            rows = connection.execute(
+                """SELECT id, name, created_at, updated_at, post_count, profile_json,
+                          profile_summary, recent_posts_json
+                   FROM publishers ORDER BY updated_at DESC, name ASC"""
+            ).fetchall()
+        return [self._with_project_posts(self._publisher_from_row(row)) for row in rows]
+
+    def load_publisher(self, publisher_id: str) -> PublisherMemory | None:
+        with self.connect() as connection:
+            row = connection.execute(
+                """SELECT id, name, created_at, updated_at, post_count, profile_json,
+                          profile_summary, recent_posts_json
+                   FROM publishers WHERE id = ?""",
+                (publisher_id,),
+            ).fetchone()
+        return None if row is None else self._with_project_posts(self._publisher_from_row(row))
+
+    def remember_publisher(
+        self,
+        *,
+        publisher_id: str | None,
+        name: str,
+        profile: PublisherProfile,
+        post_text: str,
+    ) -> PublisherMemory:
+        normalized_name = " ".join(name.strip().split()) or profile.identity
+        post_record = post_text.strip().replace("\n", " ")
+        with self.connect() as connection:
+            row = None
+            if publisher_id:
+                row = connection.execute(
+                    """SELECT id, name, created_at, updated_at, post_count, profile_json,
+                              profile_summary, recent_posts_json
+                       FROM publishers WHERE id = ?""",
+                    (publisher_id,),
+                ).fetchone()
+            if row is None:
+                row = connection.execute(
+                    """SELECT id, name, created_at, updated_at, post_count, profile_json,
+                              profile_summary, recent_posts_json
+                       FROM publishers WHERE name = ?""",
+                    (normalized_name,),
+                ).fetchone()
+
+            if row is None:
+                memory_id = uuid4().hex
+                recent_posts = [post_record] if post_record else []
+                summary = self._profile_summary(profile, len(recent_posts), recent_posts)
+                connection.execute(
+                    """INSERT INTO publishers
+                       (id, name, profile_json, profile_summary, recent_posts_json, post_count)
+                       VALUES (?, ?, ?, ?, ?, ?)""",
+                    (
+                        memory_id,
+                        normalized_name,
+                        profile.model_dump_json(),
+                        summary,
+                        json.dumps(recent_posts, ensure_ascii=False),
+                        len(recent_posts),
+                    ),
+                )
+            else:
+                memory_id = row["id"]
+                recent_posts = json.loads(row["recent_posts_json"] or "[]")
+                if post_record:
+                    recent_posts = [post_record, *[p for p in recent_posts if p != post_record]][:5]
+                post_count = int(row["post_count"]) + (1 if post_record else 0)
+                summary = self._profile_summary(profile, post_count, recent_posts)
+                connection.execute(
+                    """UPDATE publishers
+                       SET name = ?, updated_at = CURRENT_TIMESTAMP, post_count = ?,
+                           profile_json = ?, profile_summary = ?, recent_posts_json = ?
+                       WHERE id = ?""",
+                    (
+                        normalized_name,
+                        post_count,
+                        profile.model_dump_json(),
+                        summary,
+                        json.dumps(recent_posts, ensure_ascii=False),
+                        memory_id,
+                    ),
+                )
+        loaded = self.load_publisher(memory_id)
+        if loaded is None:
+            raise RuntimeError("发布者记忆保存失败")
+        return loaded
 
     def save_project(self, result: ProjectResult) -> None:
         payload = result.model_dump_json()
@@ -195,3 +295,55 @@ class Database:
             )
             for row in rows
         ]
+
+    @staticmethod
+    def _profile_summary(
+        profile: PublisherProfile, post_count: int, recent_posts: list[str]
+    ) -> str:
+        summary = (
+            f"{profile.identity}，主要发布{profile.domain}内容，粉丝规模为{profile.follower_scale}，"
+            f"常用表达风格是{profile.style}，与受众关系为{profile.audience_relationship}。"
+            f"已累计记录 {post_count} 条发布内容。"
+        )
+        if recent_posts:
+            summary += f" 最近内容：{recent_posts[0]}"
+        return summary
+
+    @staticmethod
+    def _publisher_from_row(row: sqlite3.Row) -> PublisherMemory:
+        return PublisherMemory(
+            publisher_id=row["id"],
+            name=row["name"],
+            created_at=row["created_at"],
+            updated_at=row["updated_at"],
+            post_count=row["post_count"],
+            profile=PublisherProfile.model_validate_json(row["profile_json"]),
+            profile_summary=row["profile_summary"],
+            recent_posts=json.loads(row["recent_posts_json"] or "[]"),
+        )
+
+    def _with_project_posts(self, memory: PublisherMemory) -> PublisherMemory:
+        with self.connect() as connection:
+            rows = connection.execute(
+                "SELECT result_json FROM projects ORDER BY created_at DESC LIMIT 100"
+            ).fetchall()
+        project_posts: list[str] = []
+        for row in rows:
+            try:
+                payload = json.loads(row["result_json"])
+            except json.JSONDecodeError:
+                continue
+            if payload.get("publisher_id") != memory.publisher_id:
+                continue
+            post_text = str(payload.get("post_text") or "").strip().replace("\n", " ")
+            if post_text:
+                project_posts.append(post_text)
+
+        merged: list[str] = []
+        for post in [*project_posts, *memory.recent_posts]:
+            if any(existing == post or existing.startswith(post) or post.startswith(existing) for existing in merged):
+                continue
+            merged.append(post)
+            if len(merged) >= 5:
+                break
+        return memory.model_copy(update={"recent_posts": merged})

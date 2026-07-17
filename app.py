@@ -6,10 +6,9 @@ from html import escape
 from pathlib import Path
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 from config import settings
-from models.schemas import AudiencePlan, ProjectResult, PublisherProfile
+from models.schemas import AudiencePlan, PreparedProject, ProjectResult, PublisherProfile
 from services.orchestrator import CommentLabOrchestrator
 
 
@@ -119,6 +118,27 @@ st.markdown(
     .stage-label {font-size:0.84rem; line-height:1.25; opacity:.62; white-space:nowrap;}
     .stage-item.done .stage-label {opacity:.82;}
     .stage-item.current .stage-label {opacity:1; font-weight:750;}
+    .memory-brief {
+        display:grid; grid-template-columns:repeat(3, minmax(0, 1fr));
+        gap:0.55rem; margin:0.75rem 0 0.55rem;
+    }
+    .memory-field {
+        border:1px solid rgba(49,132,197,.22); border-radius:0.45rem;
+        background:#f7f9fc; padding:0.55rem 0.65rem; min-width:0;
+    }
+    .memory-field-label {
+        color:#6b7280; font-size:0.9rem; line-height:1.25; margin-bottom:0.12rem;
+        font-weight:400;
+    }
+    .memory-field-value {
+        color:#1f2937; font-weight:400; font-size:0.84rem; line-height:1.35;
+        overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .memory-post {
+        padding:0.45rem 0.1rem; color:#374151; font-size:0.94rem;
+        line-height:1.65; white-space:pre-wrap; word-break:break-word;
+    }
+    .memory-post + .memory-post {border-top:1px solid rgba(107,114,128,.18);}
     .comparison-post {
         min-height:4.6rem; margin:0.35rem 0 0.6rem; padding:0.85rem 1rem;
         border-left:4px solid #3184c5; border-radius:0.35rem;
@@ -218,14 +238,6 @@ def scroll_to_top_on_stage_change() -> None:
     if st.session_state.get("rendered_stage") == current_stage:
         return
     st.session_state.rendered_stage = current_stage
-    components.html(
-        """
-        <script>
-        window.parent.scrollTo({top: 0, left: 0, behavior: "instant"});
-        </script>
-        """,
-        height=0,
-    )
 
 
 def render_stage_stepper(current_stage: int) -> None:
@@ -241,6 +253,56 @@ def render_stage_stepper(current_stage: int) -> None:
             '</div>'
         )
     st.markdown(f'<div class="stage-stepper">{"".join(items)}</div>', unsafe_allow_html=True)
+
+
+def prepared_from_result(result: ProjectResult) -> PreparedProject:
+    return PreparedProject(
+        project_id=result.project_id,
+        post_text=result.post_text,
+        publisher_profile=result.publisher_profile,
+        publisher_id=result.publisher_id,
+        analysis=result.analysis_before,
+        audience=result.audience,
+        background_research=result.background_research,
+    )
+
+
+def apply_publisher_memory(memory_id: str) -> None:
+    memory = orchestrator.database.load_publisher(memory_id)
+    if memory is None:
+        return
+    st.session_state.input_identity = memory.profile.identity
+    st.session_state.input_domain = memory.profile.domain
+    st.session_state.input_follower_scale = memory.profile.follower_scale
+    st.session_state.input_style = memory.profile.style
+    st.session_state.input_audience_relationship = memory.profile.audience_relationship
+    st.session_state.current_publisher_id = memory.publisher_id
+
+
+def render_publisher_memory_summary(memory) -> None:
+    fields = [
+        ("身份", memory.profile.identity),
+        ("内容领域", memory.profile.domain),
+        ("粉丝规模", memory.profile.follower_scale),
+        ("表达风格", memory.profile.style),
+        ("受众关系", memory.profile.audience_relationship),
+        ("累计记录", f"{memory.post_count} 条"),
+    ]
+    field_html = "".join(
+        '<div class="memory-field">'
+        f'<div class="memory-field-label">{escape(label)}</div>'
+        f'<div class="memory-field-value" title="{escape(value)}">{escape(value)}</div>'
+        "</div>"
+        for label, value in fields
+    )
+    st.markdown(f'<div class="memory-brief">{field_html}</div>', unsafe_allow_html=True)
+    if memory.recent_posts:
+        with st.expander("查看最近发布内容", expanded=False):
+            for index, post in enumerate(memory.recent_posts[:5], 1):
+                st.markdown(
+                    f'<div class="memory-post"><strong>{index}.</strong> {escape(post)}</div>',
+                    unsafe_allow_html=True,
+                )
 
 
 def risk_banner(level: str, title: str) -> None:
@@ -652,6 +714,48 @@ if st.session_state.stage == 1:
                 )
             else:
                 event_hint = ""
+        publisher_memories = orchestrator.database.list_publishers()
+        selected_publisher_id = None
+        publisher_name = ""
+        with st.container(border=True, key="publisher_memory_card"):
+            st.markdown("#### 用户记忆")
+            mode_options = ["新增用户"]
+            if publisher_memories:
+                mode_options.insert(0, "选择已有用户")
+            publisher_mode = st.radio(
+                "发布者",
+                mode_options,
+                horizontal=True,
+                key="publisher_memory_mode",
+                label_visibility="collapsed",
+            )
+            if publisher_mode == "选择已有用户" and publisher_memories:
+                selected_publisher_id = st.selectbox(
+                    "选择已有用户",
+                    [memory.publisher_id for memory in publisher_memories],
+                    format_func=lambda memory_id: next(
+                        memory.name
+                        for memory in publisher_memories
+                        if memory.publisher_id == memory_id
+                    ),
+                    key="selected_publisher_id",
+                )
+                selected_memory = next(
+                    memory
+                    for memory in publisher_memories
+                    if memory.publisher_id == selected_publisher_id
+                )
+                publisher_name = selected_memory.name
+                render_publisher_memory_summary(selected_memory)
+                if st.button("套用该用户画像", use_container_width=True):
+                    apply_publisher_memory(selected_publisher_id)
+                    st.rerun()
+            else:
+                publisher_name = st.text_input(
+                    "新用户名称",
+                    key="publisher_new_name",
+                    placeholder="例如：小红书摄影号 / 学生会公众号 / 个人账号A",
+                )
         with st.form("input_form", border=False):
             with st.container(border=True, key="input_post_card"):
                 st.markdown("#### 帖子内容")
@@ -686,6 +790,13 @@ if st.session_state.stage == 1:
                 style=style,
                 audience_relationship=audience_relationship,
             )
+            remembered = orchestrator.database.remember_publisher(
+                publisher_id=selected_publisher_id,
+                name=publisher_name,
+                profile=profile,
+                post_text=post_text,
+            )
+            st.session_state.current_publisher_id = remembered.publisher_id
             work_message = (
                 "内容分析、受众规划与事件背景研究正在工作..."
                 if search_background
@@ -697,6 +808,7 @@ if st.session_state.stage == 1:
                     st.session_state.prepared = orchestrator.prepare(
                         post_text,
                         profile,
+                        publisher_id=remembered.publisher_id,
                         search_background=search_background,
                         event_hint=event_hint,
                     )
@@ -708,8 +820,12 @@ if st.session_state.stage == 1:
 elif st.session_state.stage == 2:
     prepared = st.session_state.get("prepared")
     if prepared is None:
-        reset_flow()
-        st.rerun()
+        result_for_prepare: ProjectResult | None = st.session_state.get("result")
+        if result_for_prepare is None:
+            reset_flow()
+            st.rerun()
+        prepared = prepared_from_result(result_for_prepare)
+        st.session_state.prepared = prepared
     if st.button("← 返回输入页", key="back_to_stage_1"):
         st.session_state.stage = 1
         st.rerun()
@@ -778,7 +894,10 @@ elif st.session_state.stage == 3:
     if result.background_research is not None:
         render_background_research(result.background_research)
         st.divider()
-    if st.session_state.get("rewrite_project_id") != result.project_id:
+    if (
+        st.session_state.get("rewrite_project_id") != result.project_id
+        or not st.session_state.get("edited_rewrite", "").strip()
+    ):
         st.session_state.edited_rewrite = result.rewrite.rewritten_post
         st.session_state.rewrite_project_id = result.project_id
     original_col, rewrite_col = st.columns([45, 55], gap="large")
@@ -810,6 +929,9 @@ elif st.session_state.stage == 3:
         )
         if compare_clicked:
             try:
+                if not edited_rewrite.strip():
+                    st.warning("改写后的帖子不能为空。")
+                    st.stop()
                 compare_slot.empty()
                 with compare_slot.container():
                     with st.spinner("正在按确认后的改写文案重新计算分析、评论与对比..."):

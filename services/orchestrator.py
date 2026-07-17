@@ -50,6 +50,7 @@ class CommentLabOrchestrator:
         post_text: str,
         profile: PublisherProfile,
         *,
+        publisher_id: str | None = None,
         search_background: bool = False,
         event_hint: str = "",
     ) -> PreparedProject:
@@ -68,6 +69,7 @@ class CommentLabOrchestrator:
         return PreparedProject(
             post_text=post_text,
             publisher_profile=profile,
+            publisher_id=publisher_id,
             analysis=analysis,
             audience=audience,
             background_research=background_research,
@@ -157,6 +159,7 @@ class CommentLabOrchestrator:
             project_id=prepared.project_id,
             post_text=prepared.post_text,
             publisher_profile=prepared.publisher_profile,
+            publisher_id=prepared.publisher_id,
             analysis_before=prepared.analysis,
             audience=final_audience,
             simulation_before=simulation_before,

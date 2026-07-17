@@ -25,6 +25,17 @@ class PublisherProfile(StrictModel):
     audience_relationship: str = Field(min_length=1, max_length=120)
 
 
+class PublisherMemory(StrictModel):
+    publisher_id: str
+    name: str
+    created_at: str
+    updated_at: str
+    post_count: int = 0
+    profile: PublisherProfile
+    profile_summary: str
+    recent_posts: list[str] = Field(default_factory=list)
+
+
 class PhraseIssue(StrictModel):
     text: str
     reason: str
@@ -337,6 +348,7 @@ class PreparedProject(StrictModel):
     project_id: str = Field(default_factory=lambda: uuid4().hex)
     post_text: str
     publisher_profile: PublisherProfile
+    publisher_id: str | None = None
     analysis: ContentAnalysis
     audience: AudiencePlan
     background_research: WebResearchResult | None = None
@@ -347,6 +359,7 @@ class ProjectResult(StrictModel):
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     post_text: str
     publisher_profile: PublisherProfile
+    publisher_id: str | None = None
     analysis_before: ContentAnalysis
     audience: AudiencePlan
     simulation_before: SimulationResult
